@@ -6,8 +6,10 @@ import 'package:image_picker/image_picker.dart';
 
 class RegisterComplaint extends StatefulWidget {
   Function signout = () {};
-  RegisterComplaint(Function sout) {
+  Function getuserid = () {};
+  RegisterComplaint(Function sout, Function getuid) {
     signout = sout;
+    getuserid = getuid;
   }
 
   @override
@@ -36,6 +38,6 @@ class _RegisterComplaintState extends State<RegisterComplaint> {
   Widget build(BuildContext context) {
     return _image == null
         ? Container()
-        : RegistationDetailsWidget(_image!, widget.signout);
+        : RegistationDetailsWidget(_image!, widget.signout, widget.getuserid);
   }
 }

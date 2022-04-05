@@ -8,7 +8,13 @@ class LoginRegisterOptionScreen extends StatelessWidget {
   Function signin;
   Function signup;
   Function signout;
-  LoginRegisterOptionScreen(this.signin, this.signup, this.signout);
+  Function getuserid;
+  LoginRegisterOptionScreen(
+    this.signin,
+    this.signup,
+    this.signout,
+    this.getuserid,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +37,7 @@ class LoginRegisterOptionScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => LoginRegisterFormScreen(
-                          'loginUser', signin, signup, signout),
+                          'loginUser', signin, signup, signout, getuserid),
                     ),
                   );
                 },
@@ -45,7 +51,7 @@ class LoginRegisterOptionScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => LoginRegisterFormScreen(
-                          'loginAdmin', signin, signup, signout),
+                          'loginAdmin', signin, signup, signout, getuserid),
                     ),
                   );
                 },
@@ -59,7 +65,7 @@ class LoginRegisterOptionScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => LoginRegisterFormScreen(
-                          'signupUser', signin, signup, signout),
+                          'signupUser', signin, signup, signout, getuserid),
                     ),
                   );
                 },
@@ -73,7 +79,7 @@ class LoginRegisterOptionScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => LoginRegisterFormScreen(
-                          'signupAdmin', signin, signup, signout),
+                          'signupAdmin', signin, signup, signout, getuserid),
                     ),
                   );
                 },

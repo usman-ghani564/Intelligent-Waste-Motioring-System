@@ -1,7 +1,11 @@
 import 'dart:io';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp_prototype/Screens/user_dashboard.dart';
+import 'package:fyp_prototype/main.dart';
+import 'package:fyp_prototype/models/complaint.dart';
+import 'package:fyp_prototype/providers/complaint_provider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:location/location.dart' as loc;
@@ -10,9 +14,11 @@ import 'package:intl/intl.dart';
 class RegistationDetailsWidget extends StatefulWidget {
   File? _image;
   Function signout = () {};
-  RegistationDetailsWidget(File i, Function sout) {
+  Function getuserid = () {};
+  RegistationDetailsWidget(File i, Function sout, Function getuid) {
     _image = i;
     signout = sout;
+    getuserid = getuid;
   }
 
   @override
@@ -45,6 +51,8 @@ class _RegistationDetailsWidgetState extends State<RegistationDetailsWidget> {
     _getAddress(currentLocation.latitude, currentLocation.longitude)
         .then((value) {
       setState(() {
+        _latitude = currentLocation.latitude;
+        _longitude = currentLocation.longitude;
         _address = "${currentLocation.latitude}, ${currentLocation.longitude}";
       });
 
@@ -163,7 +171,8 @@ class _RegistationDetailsWidgetState extends State<RegistationDetailsWidget> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => UserDashboard(widget.signout),
+                      builder: (context) =>
+                          UserDashboard(widget.signout, widget.getuserid),
                     ),
                   );
                 },
@@ -177,12 +186,49 @@ class _RegistationDetailsWidgetState extends State<RegistationDetailsWidget> {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UserDashboard(widget.signout),
-                    ),
+                  ComplaintProvider complaintProvider = ComplaintProvider(
+                    FirebaseDatabase.instanceFor(
+                        app: firebaseApp,
+                        databaseURL:
+                            'https://fyp-project-98f0f-default-rtdb.asia-southeast1.firebasedatabase.app'),
                   );
+                  widget.getuserid().then((uid) {
+                    complaintProvider
+                        .registerComplaint(
+                          Complaint(
+                            lat: _latitude,
+                            long: _longitude,
+                            dateT: DateTime.now(),
+                            stat: 'Registered',
+                            userid: uid,
+                            imgFile: widget._image,
+                          ),
+                        )
+                        .then((value) => {
+                              if (value == '')
+                                {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: const Text(
+                                          'Complaint successfully registered'),
+                                      action: SnackBarAction(
+                                        label: 'Okay',
+                                        onPressed: () {},
+                                      ),
+                                    ),
+                                  )
+                                },
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UserDashboard(
+                                    widget.signout,
+                                    widget.getuserid,
+                                  ),
+                                ),
+                              )
+                            });
+                  });
                 },
                 child: const Text(
                   'Done',

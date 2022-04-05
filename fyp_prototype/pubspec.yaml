@@ -48,6 +48,8 @@ dependencies:
   geolocator: ^7.7.1
   location: ^4.3.0
   carousel_slider: ^4.0.0
+  google_maps_flutter: ^2.1.2
+  firebase_storage: ^10.2.8
 
 dev_dependencies:
   flutter_test:

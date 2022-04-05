@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_prototype/Screens/maps_screen.dart';
 import 'package:fyp_prototype/Screens/register_complaint.dart';
 import 'package:lottie/lottie.dart';
 
@@ -7,8 +8,10 @@ import '../main.dart';
 
 class UserDashboard extends StatelessWidget {
   Function signout = () {};
-  UserDashboard(Function sout) {
+  Function getuserid = () {};
+  UserDashboard(Function sout, Function getuid) {
     signout = sout;
+    getuserid = getuid;
   }
 
   final carousalList = [
@@ -92,7 +95,10 @@ class UserDashboard extends StatelessWidget {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => RegisterComplaint(signout),
+                  builder: (context) => RegisterComplaint(
+                    signout,
+                    getuserid,
+                  ),
                 ),
               );
             },
@@ -100,8 +106,18 @@ class UserDashboard extends StatelessWidget {
                 'https://assets9.lottiefiles.com/packages/lf20_dbqrrD.json'),
           ),
           const SizedBox(height: 20),
-          menuItem(context, 'View Maps',
-              'https://assets3.lottiefiles.com/packages/lf20_svy4ivvy.json'),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MapsScreen(),
+                ),
+              );
+            },
+            child: menuItem(context, 'View Maps',
+                'https://assets3.lottiefiles.com/packages/lf20_svy4ivvy.json'),
+          ),
           const SizedBox(height: 20),
           menuItem(context, 'FAQ\'s',
               'https://assets7.lottiefiles.com/packages/lf20_ssIwdK.json'),

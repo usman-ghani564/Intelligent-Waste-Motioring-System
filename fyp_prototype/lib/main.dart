@@ -63,11 +63,15 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   @override
   Widget build(BuildContext context) {
     return widget.signedIn
-        ? UserDashboard(context.read<AuthenticationProvider>().signOut)
+        ? UserDashboard(
+            context.read<AuthenticationProvider>().signOut,
+            context.read<AuthenticationProvider>().getUserId,
+          )
         : LoginRegisterOptionScreen(
             context.read<AuthenticationProvider>().signin,
             context.read<AuthenticationProvider>().signUp,
-            context.read<AuthenticationProvider>().signOut);
+            context.read<AuthenticationProvider>().signOut,
+            context.read<AuthenticationProvider>().getUserId);
   }
 }
 

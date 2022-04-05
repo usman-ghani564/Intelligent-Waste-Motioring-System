@@ -12,13 +12,15 @@ class LoginRegisterFormScreen extends StatefulWidget {
   late Function signin;
   late Function signup;
   late Function signout;
+  late Function getuserid;
 
   LoginRegisterFormScreen(
-      String op, Function sIn, Function sUp, Function sout) {
+      String op, Function sIn, Function sUp, Function sout, Function getuid) {
     _optionSelected = op;
     signin = sIn;
     signup = sUp;
     signout = sout;
+    getuserid = getuid;
   }
 
   @override
@@ -85,10 +87,12 @@ class _LoginRegisterFormScreenState extends State<LoginRegisterFormScreen> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      LoginRegisterOptionScreen(widget.signin,
-                                          widget.signup, widget.signout),
-                                ));
+                                    builder: (context) =>
+                                        LoginRegisterOptionScreen(
+                                            widget.signin,
+                                            widget.signup,
+                                            widget.signout,
+                                            widget.getuserid)));
                           },
                           child: const Text('more actions',
                               style: TextStyle(color: Colors.white)),
@@ -116,8 +120,8 @@ class _LoginRegisterFormScreenState extends State<LoginRegisterFormScreen> {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            UserDashboard(widget.signout),
+                                        builder: (context) => UserDashboard(
+                                            widget.signout, widget.getuserid),
                                       ));
                                 }
                               });
@@ -167,8 +171,11 @@ class _LoginRegisterFormScreenState extends State<LoginRegisterFormScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      LoginRegisterOptionScreen(widget.signin,
-                                          widget.signup, widget.signout)),
+                                      LoginRegisterOptionScreen(
+                                          widget.signin,
+                                          widget.signup,
+                                          widget.signout,
+                                          widget.getuserid)),
                             );
                           },
                           child: const Text('more actions',
@@ -195,11 +202,11 @@ class _LoginRegisterFormScreenState extends State<LoginRegisterFormScreen> {
                                   );
                                 } else {
                                   Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            UserDashboard(widget.signout)),
-                                  );
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UserDashboard(
+                                            widget.signout, widget.getuserid),
+                                      ));
                                 }
                               });
                             }
@@ -247,9 +254,11 @@ class _LoginRegisterFormScreenState extends State<LoginRegisterFormScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => LoginRegisterOptionScreen(
-                                    widget.signin,
-                                    widget.signup,
-                                    widget.signout),
+                                  widget.signin,
+                                  widget.signup,
+                                  widget.signout,
+                                  widget.getuserid,
+                                ),
                               ),
                             );
                           },
@@ -272,8 +281,8 @@ class _LoginRegisterFormScreenState extends State<LoginRegisterFormScreen> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            UserDashboard(widget.signout)),
+                                        builder: (context) => UserDashboard(
+                                            widget.signout, widget.getuserid)),
                                   );
                                 } else {
                                   Navigator.pushReplacement(
@@ -328,9 +337,11 @@ class _LoginRegisterFormScreenState extends State<LoginRegisterFormScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => LoginRegisterOptionScreen(
-                                    widget.signin,
-                                    widget.signup,
-                                    widget.signout),
+                                  widget.signin,
+                                  widget.signup,
+                                  widget.signout,
+                                  widget.getuserid,
+                                ),
                               ),
                             );
                           },

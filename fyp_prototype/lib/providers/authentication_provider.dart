@@ -62,6 +62,14 @@ class AuthenticationProvider {
     }
   }
 
+  Future<String> getUserId() async {
+    try {
+      return (await _firebaseAuthInstance.currentUser!.uid);
+    } on FirebaseAuthException catch (e) {
+      return e.message!;
+    }
+  }
+
   Future<String> signOut() async {
     try {
       await _firebaseAuthInstance.signOut();
