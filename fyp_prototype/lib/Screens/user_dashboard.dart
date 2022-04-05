@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_prototype/Screens/faq_screen.dart';
 import 'package:fyp_prototype/Screens/maps_screen.dart';
 import 'package:fyp_prototype/Screens/register_complaint.dart';
 import 'package:lottie/lottie.dart';
@@ -119,8 +120,18 @@ class UserDashboard extends StatelessWidget {
                 'https://assets3.lottiefiles.com/packages/lf20_svy4ivvy.json'),
           ),
           const SizedBox(height: 20),
-          menuItem(context, 'FAQ\'s',
-              'https://assets7.lottiefiles.com/packages/lf20_ssIwdK.json'),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FaqScreen(),
+                ),
+              );
+            },
+            child: menuItem(context, 'FAQ\'s',
+                'https://assets7.lottiefiles.com/packages/lf20_ssIwdK.json'),
+          ),
           const SizedBox(height: 20),
           menuItem(context, 'Ask Question',
               'https://assets8.lottiefiles.com/packages/lf20_e3q4w80w.json'),
