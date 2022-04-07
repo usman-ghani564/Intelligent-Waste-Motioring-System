@@ -191,6 +191,7 @@ class _RegistationDetailsWidgetState extends State<RegistationDetailsWidget> {
                         app: firebaseApp,
                         databaseURL:
                             'https://fyp-project-98f0f-default-rtdb.asia-southeast1.firebasedatabase.app'),
+                    widget.getuserid,
                   );
                   widget.getuserid().then((uid) {
                     complaintProvider

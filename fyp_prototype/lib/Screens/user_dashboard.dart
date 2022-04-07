@@ -112,7 +112,7 @@ class UserDashboard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => MapsScreen(),
+                  builder: (context) => GoogleMapsScreen(getuserid),
                 ),
               );
             },
@@ -125,7 +125,7 @@ class UserDashboard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FaqScreen(),
+                  builder: (context) => const FaqScreen(),
                 ),
               );
             },
