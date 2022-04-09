@@ -68,7 +68,6 @@ class ComplaintProvider {
           filteredList.add(complaint);
         }
       }
-      print(filteredList);
       return filteredList;
     } catch (e) {
       print('Error: $e');

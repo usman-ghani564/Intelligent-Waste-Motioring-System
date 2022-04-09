@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_prototype/Screens/maps_marker_detail_screen.dart';
 import 'package:fyp_prototype/main.dart';
 import 'package:fyp_prototype/providers/complaint_provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,7 +17,9 @@ class GoogleMapsScreen extends StatefulWidget {
 class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
   final Completer<GoogleMapController> _controller = Completer();
 
-  static const LatLng _center = LatLng(31.5272978, 74.306884);
+  static const LatLng _center = LatLng(31.48196985, 74.32249475);
+
+  late BitmapDescriptor customIcon;
 
   final Set<Marker> _markers = {};
 
@@ -28,7 +31,19 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
 
   @override
   void initState() {
+    BitmapDescriptor.fromAssetImage(
+            const ImageConfiguration(size: Size(12, 12)),
+            'assets/profile_pic.jpg')
+        .then((icon) {
+      customIcon = icon;
+    });
     () async {
+      _markers.add(
+        const Marker(
+            markerId: MarkerId('center'),
+            position: _center,
+            icon: BitmapDescriptor.defaultMarker),
+      );
       ComplaintProvider complaintProvider = ComplaintProvider(
         FirebaseDatabase.instanceFor(
             app: firebaseApp,
@@ -37,30 +52,51 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
         widget.getUserId,
       );
       locationsList = await complaintProvider.FilterComplaintsByUserId();
-      /*for (var item in locationsList) {
-        print('Boy: ' + item.toString());
+      for (var item in locationsList) {
         final latitude = item['latitude'];
         final longitude = item['longitude'];
         final uid = item['uid'];
-        final time = item['dateTime'].toString();
+        final time = item['dateTime'];
 
-        _markers.add(Marker(
-          markerId: MarkerId('$latitude$longitude$uid$time'),
-          position: LatLng(
-            item['latitude'],
-            item['longitude'],
-          ),
-          icon: BitmapDescriptor.defaultMarker,
-        ));
-      }*/
-      _markers.add(const Marker(
-        markerId: MarkerId('something'),
-        position: LatLng(32.5272978, 74.306884),
-        icon: BitmapDescriptor.defaultMarker,
-      ));
-      setState(() {});
+        if (widget.getUserId() == uid) {
+          _markers.add(
+            Marker(
+              markerId: MarkerId('$latitude$longitude$uid${time.toString()}'),
+              position: LatLng(
+                item['latitude'],
+                item['longitude'],
+              ),
+              icon: customIcon,
+              onTap: () => goToMakerScreen(
+                latitude,
+                longitude,
+                uid,
+                time,
+                item['status'],
+              ),
+            ),
+          );
+        }
+      }
     }();
+    _onAddMarkerButtonPressed();
     super.initState();
+  }
+
+  void goToMakerScreen(
+    double lat,
+    double long,
+    String uid,
+    DateTime dateTime,
+    String status,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            MapsMarkerDetailScreen(lat, long, uid, dateTime, status),
+      ),
+    );
   }
 
   void _onAddMarkerButtonPressed() async {
@@ -74,15 +110,30 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
     locationsList = await complaintProvider.FilterComplaintsByUserId();
     setState(() {
       for (var item in locationsList) {
-        _markers.add(Marker(
-          // This marker id can be anything that uniquely identifies each marker.
-          markerId: MarkerId(_lastMapPosition.toString()),
-          position: LatLng(
-            item['latitude'],
-            item['longitude'],
-          ),
-          icon: BitmapDescriptor.defaultMarker,
-        ));
+        final latitude = item['latitude'];
+        final longitude = item['longitude'];
+        final uid = item['uid'];
+        final time = item['dateTime'];
+
+        if (widget.getUserId() == uid) {
+          _markers.add(
+            Marker(
+              markerId: MarkerId('$latitude$longitude$uid${time.toString()}'),
+              position: LatLng(
+                item['latitude'],
+                item['longitude'],
+              ),
+              icon: customIcon,
+              onTap: () => goToMakerScreen(
+                latitude,
+                longitude,
+                uid,
+                time,
+                item['status'],
+              ),
+            ),
+          );
+        }
       }
     });
   }
@@ -107,19 +158,14 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
           children: <Widget>[
             GoogleMap(
               onMapCreated: _onMapCreated,
+              compassEnabled: true,
               initialCameraPosition: const CameraPosition(
                 target: _center,
-                zoom: 14.5,
+                zoom: 12.5,
               ),
               mapType: _currentMapType,
               markers: _markers,
               onCameraMove: _onCameraMove,
-            ),
-            FloatingActionButton(
-              onPressed: _onAddMarkerButtonPressed,
-              materialTapTargetSize: MaterialTapTargetSize.padded,
-              backgroundColor: Colors.green,
-              child: const Icon(Icons.add_location, size: 36.0),
             ),
           ],
         ),
