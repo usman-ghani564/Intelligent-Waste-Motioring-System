@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fyp_prototype/Screens/maps_marker_detail_screen.dart';
 import 'package:fyp_prototype/main.dart';
 import 'package:fyp_prototype/providers/complaint_provider.dart';
@@ -29,21 +30,22 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
 
   late var locationsList = [];
 
+  String _darkMapStyle = '';
+
+  Future _loadMapStyles() async {
+    _darkMapStyle = await rootBundle.loadString('assets/dark_mode.json');
+  }
+
   @override
   void initState() {
-    BitmapDescriptor.fromAssetImage(
-            const ImageConfiguration(size: Size(12, 12)),
-            'assets/profile_pic.jpg')
-        .then((icon) {
-      customIcon = icon;
-    });
     () async {
-      _markers.add(
+      //Center should not be in the marker list becuase it is not a complaint
+      /*_markers.add(
         const Marker(
             markerId: MarkerId('center'),
             position: _center,
             icon: BitmapDescriptor.defaultMarker),
-      );
+      );*/
       ComplaintProvider complaintProvider = ComplaintProvider(
         FirebaseDatabase.instanceFor(
             app: firebaseApp,
@@ -58,7 +60,7 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
         final uid = item['uid'];
         final time = item['dateTime'];
 
-        if (widget.getUserId() == uid) {
+        if (await widget.getUserId() == uid) {
           _markers.add(
             Marker(
               markerId: MarkerId('$latitude$longitude$uid${time.toString()}'),
@@ -66,7 +68,7 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
                 item['latitude'],
                 item['longitude'],
               ),
-              icon: customIcon,
+              icon: BitmapDescriptor.defaultMarker,
               onTap: () => goToMakerScreen(
                 latitude,
                 longitude,
@@ -143,7 +145,11 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
   }
 
   void _onMapCreated(GoogleMapController controller) {
-    _controller.complete(controller);
+    () async {
+      await _loadMapStyles();
+      controller.setMapStyle(_darkMapStyle);
+      _controller.complete(controller);
+    }();
   }
 
   @override
@@ -151,8 +157,11 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Complaints Locations'),
-          backgroundColor: Colors.green[700],
+          title: const Text(
+            'Complaints Locations',
+            style: TextStyle(color: Colors.black),
+          ),
+          backgroundColor: const Color(0xFFCCFF00),
         ),
         body: Stack(
           children: <Widget>[

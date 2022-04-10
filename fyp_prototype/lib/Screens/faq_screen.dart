@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-//import 'package:footer/footer.dart';
-//import 'package:footer/footer_view.dart';
 import 'package:expandable/expandable.dart';
+import 'package:fyp_prototype/models/faq.dart';
+import 'package:fyp_prototype/providers/faqProvider.dart';
+import 'package:firebase_database/firebase_database.dart';
+
+import '../main.dart';
+import '../providers/faqProvider.dart';
 
 class FaqScreen extends StatefulWidget {
   const FaqScreen({Key? key}) : super(key: key);
@@ -14,32 +18,48 @@ class _FaqScreenState extends State<FaqScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   // Initial Selected Value
   String dropdownvalue = 'Item 1';
+  final database = FirebaseDatabase.instanceFor(
+      app: firebaseApp,
+      databaseURL:
+          'https://fyp-project-98f0f-default-rtdb.asia-southeast1.firebasedatabase.app');
+  //DatabaseReference ref = FirebaseDatabase.instance.ref("complaints");
+  FaqProvider myFaq = FaqProvider(
+    FirebaseDatabase.instanceFor(
+        app: firebaseApp,
+        databaseURL:
+            'https://fyp-project-98f0f-default-rtdb.asia-southeast1.firebasedatabase.app'),
+  );
+  TextEditingController _namedContreller = TextEditingController();
 
+  DatabaseReference ref = FirebaseDatabase.instance.ref("faq");
+  List<dynamic> FAQList = [];
+
+  Future<void> GetFAQFirebase() async {
+    print("complain");
+    DatabaseEvent event = await database.ref('faq').once();
+    //database.ref().child("complaints").once().then((value)=> print(value.));
+    List<dynamic> res = [];
+    Map<dynamic, dynamic> map = {};
+    event.snapshot.children.forEach((element) {
+      setState(() {
+        FAQList.add(element.value);
+      });
+      //res.add( element.value);
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    GetFAQFirebase();
+    super.initState();
+  }
   // List of items in our dropdown menu
-  var items = [
-    {
-      'title': 'How to Register complain',
-      'description':
-          'First login or sign up through our app then click on register complain our application will prompt you that it will access your camera click ok then take a picture then click ok to register complain '
-    },
-    {
-      'title': 'How to Register complain',
-      'description':
-          'First login or sign up through our app then click on register complain our application will prompt you that it will access your camera click ok then take a picture then click ok to register complain '
-    },
-    {
-      'title': 'How to Register complain',
-      'description':
-          'First login or sign up through our app then click on register complain our application will prompt you that it will access your camera click ok then take a picture then click ok to register complain '
-    },
-    {
-      'title': 'How to Register complain',
-      'description':
-          'First login or sign up through our app then click on register complain our application will prompt you that it will access your camera click ok then take a picture then click ok to register complain '
-    },
-  ];
+
   @override
   Widget build(BuildContext context) {
+    print("in build");
+    print(FAQList);
     return Scaffold(
       backgroundColor: const Color(0XFF2C3539),
       appBar: AppBar(
@@ -75,28 +95,25 @@ class _FaqScreenState extends State<FaqScreen> {
                                   children: <Widget>[
                                     Padding(
                                       padding: EdgeInsets.all(1.0),
-                                      child: Text("Name"),
+                                      child: Text("Ask your Question"),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(6.0),
-                                      child: TextFormField(),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(1.0),
-                                      child: Text("Question"),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(6.0),
-                                      child: TextFormField(),
-                                    ),
+                                        padding: EdgeInsets.all(6.0),
+                                        child: TextField(
+                                          controller: _namedContreller,
+                                        )),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: RaisedButton(
                                         child: Text("Ask"),
                                         onPressed: () {
-                                          // if (_formKey.currentState.validate()) {
-                                          //   _formKey.currentState.save();
-                                          // }
+                                          print("FAQ pressed");
+                                          FAQ tempVar = FAQ();
+                                          tempVar.setQuestion(
+                                              _namedContreller.text);
+                                          tempVar.setAnswer("");
+                                          tempVar.setCustomerId("UserID");
+                                          myFaq.registerQuestion(tempVar);
                                         },
                                       ),
                                     )
@@ -116,7 +133,8 @@ class _FaqScreenState extends State<FaqScreen> {
         child: ListView(
           //mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            for (var i in items) Card1(i['title'], items[0]['description'])
+            if (FAQList.length != 0)
+              for (var i in FAQList) Card1(i['question'], i['answer'])
           ],
         ),
       ),

@@ -93,7 +93,7 @@ class UserDashboard extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => RegisterComplaint(
