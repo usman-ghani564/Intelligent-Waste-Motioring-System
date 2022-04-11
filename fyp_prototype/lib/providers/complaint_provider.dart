@@ -18,7 +18,7 @@ class ComplaintProvider {
        * the complaint is in the 10 meter raduis than decalre it as the same
        * complaint and no need to spam/submit it
        */
-      DatabaseEvent event = await _firebaseDatabase.ref('complaints').once();
+      /*DatabaseEvent event = await _firebaseDatabase.ref('complaints').once();
       List<dynamic> complaintsList = [];
       final userId = await getUserId();
       for (var element in event.snapshot.children) {
@@ -171,7 +171,34 @@ class ComplaintProvider {
         });
         print('Complaint Registered complaintsList == null!');
         return "Complaint Registered!";
-      }
+      }*/
+
+      var data = {
+        'uid': complaint.getUserId,
+        'longitude': complaint.getLongitude,
+        'latitude': complaint.getLatitude,
+        'status': complaint.getStatus,
+        'dateTime': complaint.getDateTime.toString(),
+        'imageUrl': complaint.getImageUrl == '' ? '' : complaint.getImageUrl,
+      };
+      final _firebaseStorage = FirebaseStorage.instanceFor(
+          bucket: "gs://fyp-project-98f0f.appspot.com");
+      var file = File(complaint.imageFile.path);
+
+      final longitude = data['longitude'];
+      final latitude = data['latitude'];
+      final uid = data['uid'];
+      final time = data['dateTime'].toString();
+
+      var snapshot = await _firebaseStorage
+          .ref()
+          .child('images/$longitude$latitude$uid$time')
+          .putFile(file);
+
+      await snapshot.ref.getDownloadURL().then((value) async {
+        data['imageUrl'] = value;
+        await _firebaseDatabase.ref().child("complaints").push().set(data);
+      });
 
       return 'Registered!';
     } catch (e) {

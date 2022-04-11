@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_prototype/Screens/admin_maps_screen.dart';
 import 'package:fyp_prototype/Screens/complaint_list.dart';
 import 'package:fyp_prototype/Screens/register_complaint.dart';
 import 'package:lottie/lottie.dart';
@@ -9,25 +10,28 @@ import '../main.dart';
 
 class AdminDashboard extends StatelessWidget {
   Function signout = () {};
-  AdminDashboard(Function sout) {
+  Function getUserId = () {};
+
+  AdminDashboard(Function sout, Function getUid) {
     signout = sout;
+    getUserId = getUid;
   }
 
   final carousalList = [
     {
       'title': '',
       'imgUrl':
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlEo5EKL1rmrTsux_yA3pkrczRhoMhFNvOrg&usqp=CAU'
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlEo5EKL1rmrTsux_yA3pkrczRhoMhFNvOrg&usqp=CAU'
     },
     {
       'title': '',
       'imgUrl':
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQByVFnD78lnaJcXecq_jkVY80tx07M_XZz8A&usqp=CAU'
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQByVFnD78lnaJcXecq_jkVY80tx07M_XZz8A&usqp=CAU'
     },
     {
       'title': '',
       'imgUrl':
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSg0VZIrvtU0RLkN15IRFYH9PfoSvDzxOOEMw&usqp=CAU'
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSg0VZIrvtU0RLkN15IRFYH9PfoSvDzxOOEMw&usqp=CAU'
     }
   ];
 
@@ -86,11 +90,19 @@ class AdminDashboard extends StatelessWidget {
               );
             }).toList(),
           ),
-
           const SizedBox(height: 20),
-
-          menuItem(context, 'View Maps',
-              'https://assets3.lottiefiles.com/packages/lf20_svy4ivvy.json'),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AdminGoogleMapsScreen(getUserId),
+                ),
+              );
+            },
+            child: menuItem(context, 'View Maps',
+                'https://assets3.lottiefiles.com/packages/lf20_svy4ivvy.json'),
+          ),
           const SizedBox(height: 20),
           InkWell(
             onTap: () {
@@ -104,7 +116,6 @@ class AdminDashboard extends StatelessWidget {
             child: menuItem(context, 'FAQ\'s',
                 'https://assets7.lottiefiles.com/packages/lf20_ssIwdK.json'),
           ),
-
           const SizedBox(height: 20),
           InkWell(
             onTap: () {

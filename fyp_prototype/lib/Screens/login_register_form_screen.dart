@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fyp_prototype/Screens/admin_dashboard.dart';
 import 'package:fyp_prototype/Screens/user_dashboard.dart';
 import 'package:fyp_prototype/Screens/login_register_option_screen.dart';
 import 'package:fyp_prototype/main.dart';
@@ -204,7 +205,7 @@ class _LoginRegisterFormScreenState extends State<LoginRegisterFormScreen> {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => UserDashboard(
+                                        builder: (context) => AdminDashboard(
                                             widget.signout, widget.getuserid),
                                       ));
                                 }

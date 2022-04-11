@@ -8,14 +8,14 @@ import 'package:fyp_prototype/main.dart';
 import 'package:fyp_prototype/providers/complaint_provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class GoogleMapsScreen extends StatefulWidget {
+class UserGoogleMapsScreen extends StatefulWidget {
   Function getUserId = () {};
-  GoogleMapsScreen(this.getUserId);
+  UserGoogleMapsScreen(this.getUserId);
   @override
-  _GoogleMapsScreenState createState() => _GoogleMapsScreenState();
+  _UserGoogleMapsScreenState createState() => _UserGoogleMapsScreenState();
 }
 
-class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
+class _UserGoogleMapsScreenState extends State<UserGoogleMapsScreen> {
   final Completer<GoogleMapController> _controller = Completer();
 
   static const LatLng _center = LatLng(31.48196985, 74.32249475);
@@ -157,6 +157,10 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           title: const Text(
             'Complaints Locations',
             style: TextStyle(color: Colors.black),

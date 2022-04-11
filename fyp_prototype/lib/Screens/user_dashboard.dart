@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp_prototype/Screens/faq_screen.dart';
-import 'package:fyp_prototype/Screens/maps_screen.dart';
+import 'package:fyp_prototype/Screens/user_maps_screen.dart';
 import 'package:fyp_prototype/Screens/register_complaint.dart';
 import 'package:lottie/lottie.dart';
 
@@ -112,7 +112,7 @@ class UserDashboard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => GoogleMapsScreen(getuserid),
+                  builder: (context) => UserGoogleMapsScreen(getuserid),
                 ),
               );
             },
