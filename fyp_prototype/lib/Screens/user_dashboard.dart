@@ -36,9 +36,9 @@ class UserDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0XFF2C3539),
+      backgroundColor: const Color(0XFF006E7F),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color(0xFFF8CB2E),
         actions: [
           IconButton(
               onPressed: () {
@@ -51,7 +51,10 @@ class UserDashboard extends StatelessWidget {
                   );
                 });
               },
-              icon: Icon(Icons.logout))
+              icon: Icon(
+                Icons.logout,
+                color: Colors.black,
+              ))
         ],
       ),
       drawer: Drawer(child: Container()),
@@ -150,7 +153,7 @@ class UserDashboard extends StatelessWidget {
             height: 80,
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
-              color: const Color(0xFFCCFF00),
+              color: const Color(0xFFF8CB2E),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Align(

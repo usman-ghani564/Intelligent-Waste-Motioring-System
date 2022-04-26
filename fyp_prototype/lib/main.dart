@@ -21,7 +21,7 @@ class App extends StatelessWidget {
       ),
       dark: ThemeData(
         brightness: Brightness.dark,
-        backgroundColor: const Color(0XFF2C3539),
+        backgroundColor: const Color(0XFF006E7F),
         primarySwatch: Colors.red,
       ),
       initial: AdaptiveThemeMode.dark,

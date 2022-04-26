@@ -38,22 +38,23 @@ class AdminDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0XFF2C3539),
+      backgroundColor: const Color(0XFF006E7F),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color(0xFFF8CB2E),
         actions: [
           IconButton(
-              onPressed: () {
-                signout().then((_) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => App(),
-                    ),
-                  );
-                });
-              },
-              icon: Icon(Icons.logout))
+            onPressed: () {
+              signout().then((_) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => App(),
+                  ),
+                );
+              });
+            },
+            icon: Icon(Icons.logout, color: Colors.black),
+          )
         ],
       ),
       drawer: Drawer(child: Container()),
@@ -126,7 +127,7 @@ class AdminDashboard extends StatelessWidget {
                 ),
               );
             },
-            child: menuItem(context, 'Complains\'s',
+            child: menuItem(context, 'Complaints',
                 'https://assets7.lottiefiles.com/packages/lf20_ssIwdK.json'),
           ),
         ],
@@ -144,7 +145,7 @@ class AdminDashboard extends StatelessWidget {
             height: 80,
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
-              color: const Color(0xFFCCFF00),
+              color: const Color(0xFFF8CB2E),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Align(
