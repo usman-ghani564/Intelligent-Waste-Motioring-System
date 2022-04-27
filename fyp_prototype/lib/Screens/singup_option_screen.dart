@@ -1,20 +1,20 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:fyp_prototype/Screens/login_register_form_screen.dart';
+import 'package:fyp_prototype/Screens/login_option_screen.dart';
 import 'package:fyp_prototype/Screens/user_dashboard.dart';
+import 'package:fyp_prototype/Screens/worker_dashobard.dart';
 import 'package:lottie/lottie.dart';
 
 import '../main.dart';
 import 'admin_dashboard.dart';
 
-class LoginRegisterOptionScreen extends StatefulWidget {
+class SignUpOptionScreen extends StatefulWidget {
   Function signin;
   Function signup;
   Function signout;
   Function getuserid;
 
-  LoginRegisterOptionScreen(
+  SignUpOptionScreen(
     this.signin,
     this.signup,
     this.signout,
@@ -22,17 +22,15 @@ class LoginRegisterOptionScreen extends StatefulWidget {
   );
 
   @override
-  State<LoginRegisterOptionScreen> createState() =>
-      _LoginRegisterOptionScreenState();
+  State<SignUpOptionScreen> createState() => _SignUpOptionScreenState();
 }
 
-class _LoginRegisterOptionScreenState extends State<LoginRegisterOptionScreen> {
+class _SignUpOptionScreenState extends State<SignUpOptionScreen> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String loginString = 'login User';
+  String loginString = 'Register User';
   bool userPressed = true;
-  bool adminPressed = false;
   bool workerPressed = false;
   bool isLoading = false;
 
@@ -56,10 +54,12 @@ class _LoginRegisterOptionScreenState extends State<LoginRegisterOptionScreen> {
                 children: [
                   // ignore: sized_box_for_whitespace
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    child: Lottie.asset('assets/garbage_truck_lottie.json'),
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    child: Lottie.network(
+                        'https://assets9.lottiefiles.com/packages/lf20_xdhlxru1.json'),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                   outerContainer(context),
@@ -114,9 +114,8 @@ class _LoginRegisterOptionScreenState extends State<LoginRegisterOptionScreen> {
                       ? null
                       : () {
                           setState(() {
-                            loginString = 'login User';
+                            loginString = 'Register User';
                             userPressed = true;
-                            adminPressed = false;
                             workerPressed = false;
                           });
                         },
@@ -130,25 +129,8 @@ class _LoginRegisterOptionScreenState extends State<LoginRegisterOptionScreen> {
                       ? null
                       : () {
                           setState(() {
-                            loginString = 'login Admin';
+                            loginString = 'Register Worker';
                             userPressed = false;
-                            adminPressed = true;
-                            workerPressed = false;
-                          });
-                        },
-                  child: innerContainer(
-                      context,
-                      'https://assets3.lottiefiles.com/packages/lf20_9iugpxgj.json',
-                      adminPressed),
-                ),
-                InkWell(
-                  onTap: isLoading
-                      ? null
-                      : () {
-                          setState(() {
-                            loginString = 'login Worker';
-                            userPressed = false;
-                            adminPressed = false;
                             workerPressed = true;
                           });
                         },
@@ -170,7 +152,7 @@ class _LoginRegisterOptionScreenState extends State<LoginRegisterOptionScreen> {
             ),
             Form(
               key: _formKey,
-              child: loginForms(loginString),
+              child: signupForms(loginString),
             )
           ],
         ),
@@ -210,7 +192,7 @@ class _LoginRegisterOptionScreenState extends State<LoginRegisterOptionScreen> {
     );
   }
 
-  Widget loginForms(String option) {
+  Widget signupForms(String option) {
     return Column(
       children: [
         Container(
@@ -272,24 +254,22 @@ class _LoginRegisterOptionScreenState extends State<LoginRegisterOptionScreen> {
                     ? null
                     : () {
                         String usertype = '';
-                        if (option == 'login User') {
+                        if (option == 'Register User') {
                           usertype = 'user';
-                        } else if (option == 'login Admin') {
-                          usertype = 'admin';
-                        } else if (option == 'login Worker') {
-                          usertype = 'woker';
+                        } else if (option == 'Register Worker') {
+                          usertype = 'worker';
                         }
                         if (_formKey.currentState!.validate()) {
                           setState(() {
                             isLoading = true;
                           });
                           widget
-                              .signin(
+                              .signup(
                                   email: emailController.text,
                                   password: passwordController.text,
                                   userType: usertype)
                               .then((val) {
-                            if (val == 'Signed In') {
+                            if (val == 'Signed Up') {
                               if (usertype == 'user') {
                                 Navigator.pushReplacement(
                                   context,
@@ -297,30 +277,47 @@ class _LoginRegisterOptionScreenState extends State<LoginRegisterOptionScreen> {
                                       builder: (context) => UserDashboard(
                                           widget.signout, widget.getuserid)),
                                 );
-                              } else if (usertype == 'admin') {
+                              } else if (usertype == 'worker') {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => AdminDashboard(
+                                      builder: (context) => WorkerDashboard(
                                           widget.signout, widget.getuserid)),
                                 );
-                              } else {
-                                //TODO: here add dashboard for worker
                               }
                             } else {
+                              //TODO: change the app to signupscreen
                               Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (context) => App()),
+                                MaterialPageRoute(
+                                    builder: (context) => SignUpOptionScreen(
+                                        widget.signin,
+                                        widget.signup,
+                                        widget.signout,
+                                        widget.getuserid)),
                               );
                             }
                           });
                         }
                       },
-                child: filledNeonButton(context, 'login')),
+                child: filledNeonButton(context, 'signup')),
             TextButton(
-              onPressed: isLoading ? null : () {},
+              onPressed: isLoading
+                  ? null
+                  : () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginRegisterOptionScreen(
+                              widget.signin,
+                              widget.signup,
+                              widget.signout,
+                              widget.getuserid),
+                        ),
+                      );
+                    },
               child: const Text(
-                'Create an account',
+                'Already have an account?',
                 style: TextStyle(
                   color: Color(0xFFEE5007),
                 ),

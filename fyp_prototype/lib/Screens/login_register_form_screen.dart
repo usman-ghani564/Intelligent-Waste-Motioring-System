@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fyp_prototype/Screens/admin_dashboard.dart';
 import 'package:fyp_prototype/Screens/user_dashboard.dart';
-import 'package:fyp_prototype/Screens/login_register_option_screen.dart';
+import 'package:fyp_prototype/Screens/login_option_screen.dart';
 import 'package:fyp_prototype/main.dart';
 import 'package:fyp_prototype/providers/authentication_provider.dart';
 import 'package:provider/provider.dart';
