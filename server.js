@@ -3,6 +3,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
+var http = require("http");
+var fs = require("fs");
 
 var corsOptions = {
   origin: "http://localhost:3000",
@@ -45,9 +47,32 @@ app.post(`/api/airQ`, cors(), (req, res) => {
   res.send(air);
 });
 
+app.get("/api/img", async (req, res) => {
+  dest = "./upload";
+  var url =
+    "http://firebasestorage.googleapis.com/v0/b/fyp-project-98f0f.appspot.com/o/images%2FimageName?alt=media&token=2986a839-f2c0-4239-a46f-553a733dee77";
+  var file = fs.createWriteStream(dest);
+  http.get(url, function (response) {
+    response.pipe(file);
+    file.on("finish", function () {
+      file.close();
+    });
+  });
+});
+
+app.get("/api/yolov5/confidence", (req, res) => {
+  var name = 2;
+  var choice = 1;
+  var spawn = require("child_process").spawn;
+  var process = spawn("python", ["./read.py", choice, name]);
+  process.stdout.on("data", function (data) {
+    res.send(data.toString());
+  });
+});
+
 app.get("/api/yolov5", (req, res) => {
   var name = 2;
-  var choice = 2;
+  var choice = 0;
   var spawn = require("child_process").spawn;
   var process = spawn("python", ["./read.py", choice, name]);
   process.stdout.on("data", function (data) {
