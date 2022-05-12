@@ -39,6 +39,7 @@ class UserDashboard extends StatelessWidget {
       backgroundColor: const Color(0XFF006E7F),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF8CB2E),
+        iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           IconButton(
               onPressed: () {

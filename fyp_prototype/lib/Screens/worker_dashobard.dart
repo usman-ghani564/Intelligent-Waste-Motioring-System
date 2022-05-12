@@ -1,18 +1,75 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:fyp_prototype/Screens/faq_screen.dart';
-import 'package:fyp_prototype/Screens/user_maps_screen.dart';
+import 'package:fyp_prototype/Screens/admin_maps_screen.dart';
+import 'package:fyp_prototype/Screens/Worker_complaint_list.dart';
 import 'package:fyp_prototype/Screens/register_complaint.dart';
 import 'package:lottie/lottie.dart';
-
+import 'package:fyp_prototype/Screens/faq_screen.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart' as geo;
+import 'package:location/location.dart' as loc;
 import '../main.dart';
 
-class WorkerDashboard extends StatelessWidget {
+class WorkerDashboard extends StatefulWidget {
   Function signout = () {};
-  Function getuserid = () {};
-  WorkerDashboard(Function sout, Function getuid) {
+  Function getUserId = () {};
+  double lat = 0;
+  double lon = 0;
+
+  WorkerDashboard(Function sout, Function getUid) {
     signout = sout;
-    getuserid = getuid;
+    getUserId = getUid;
+  }
+
+  @override
+  State<WorkerDashboard> createState() => _WorkerDashboardState();
+}
+
+class _WorkerDashboardState extends State<WorkerDashboard> {
+  final loc.Location location = loc.Location();
+  Geolocator geolocator = Geolocator();
+
+  late Position userLocation;
+  String _address = "";
+  double latitude = 0.0, longitude = 0.0;
+  String _city = "", _country = "", _state = "", _zipCode = "";
+  String street = "";
+
+  Future<List<geo.Placemark>> _getAddress(double? lat, double? lang) async {
+    //final coordinates = new Coordinates(lat, lang);
+    List<geo.Placemark> placemarks =
+        await geo.placemarkFromCoordinates(lat!, lang!);
+    return placemarks;
+  }
+
+  getLoc() async {
+    var currentLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
+    //print(
+    //'Latitude: ${currentLocation.latitude}, Longitude: ${currentLocation.longitude}');
+
+    //_currentPosition = await location.getLocation();
+    _getAddress(currentLocation.latitude, currentLocation.longitude)
+        .then((value) {
+      setState(() {
+        latitude = currentLocation.latitude;
+        widget.lat = latitude;
+
+        longitude = currentLocation.longitude;
+        widget.lon = longitude;
+        _address = "${currentLocation.latitude}, ${currentLocation.longitude}";
+
+        street = value.last.locality.toString();
+      });
+
+      latitude = currentLocation.latitude;
+      longitude = currentLocation.longitude;
+      _city = value.first.locality.toString();
+      _country = value.first.country.toString();
+      _state = value.first.administrativeArea.toString();
+      _zipCode = value.first.postalCode.toString();
+    });
+    return _address;
   }
 
   final carousalList = [
@@ -32,29 +89,41 @@ class WorkerDashboard extends StatelessWidget {
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSg0VZIrvtU0RLkN15IRFYH9PfoSvDzxOOEMw&usqp=CAU'
     }
   ];
+  @override
+  void initState() {
+    super.initState();
+    getLoc();
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(
+        "================================================Printing my location in build=================================================");
+    print(_address);
+    print(longitude);
+    print(latitude);
+    print(_address);
+    print(_city);
+    print("address123");
+    print(street);
     return Scaffold(
       backgroundColor: const Color(0XFF006E7F),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF8CB2E),
         actions: [
           IconButton(
-              onPressed: () {
-                signout().then((_) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => App(),
-                    ),
-                  );
-                });
-              },
-              icon: Icon(
-                Icons.logout,
-                color: Colors.black,
-              ))
+            onPressed: () {
+              widget.signout().then((_) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => App(),
+                  ),
+                );
+              });
+            },
+            icon: Icon(Icons.logout, color: Colors.black),
+          )
         ],
       ),
       drawer: Drawer(child: Container()),
@@ -91,31 +160,13 @@ class WorkerDashboard extends StatelessWidget {
               );
             }).toList(),
           ),
-          SizedBox(
-            height: 20,
-          ),
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RegisterComplaint(
-                    signout,
-                    getuserid,
-                  ),
-                ),
-              );
-            },
-            child: menuItem(context, 'Register Complaint',
-                'https://assets9.lottiefiles.com/packages/lf20_dbqrrD.json'),
-          ),
           const SizedBox(height: 20),
           InkWell(
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => UserGoogleMapsScreen(getuserid),
+                  builder: (context) => AdminGoogleMapsScreen(widget.getUserId),
                 ),
               );
             },
@@ -128,16 +179,14 @@ class WorkerDashboard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const FaqScreen(),
+                  builder: (context) =>
+                      WorkerComplaintList(widget.lat, widget.lon),
                 ),
               );
             },
-            child: menuItem(context, 'FAQ\'s',
+            child: menuItem(context, 'Complaints',
                 'https://assets7.lottiefiles.com/packages/lf20_ssIwdK.json'),
           ),
-          const SizedBox(height: 20),
-          menuItem(context, 'Ask Question',
-              'https://assets8.lottiefiles.com/packages/lf20_e3q4w80w.json'),
         ],
       ),
     );
