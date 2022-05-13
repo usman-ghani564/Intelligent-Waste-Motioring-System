@@ -69,7 +69,7 @@ app.get("/api/getimg", async (req, res) => {
     download(url, filePath).then(() => {
       console.log("Download Completed");
     });
-    res.send("download successfull!");
+    res.send({ status: 1 });
   } catch (e) {
     res.send(e.message);
   }
@@ -106,23 +106,17 @@ app.get("/api/yolov5/confidence", (req, res) => {
 });
 
 app.get("/api/yolov5", (req, res) => {
-  var name = 2;
-  var choice = 0;
-  var spawn = require("child_process").spawn;
-  var process = spawn("python", ["./read.py", choice, name]);
-  process.stdout.on("data", function (data) {
-    res.send(data.toString());
-  });
-});
-
-app.get("/yolov5/", (req, res) => {
-  var name = 2;
-  var choice = 1;
-  var spawn = require("child_process").spawn;
-  var process = spawn("python", ["./read2.py"]);
-  process.stdout.on("data", function (data) {
-    res.send(data.toString());
-  });
+  try {
+    var name = 2;
+    var choice = 0;
+    var spawn = require("child_process").spawn;
+    var process = spawn("python", ["./read.py", choice, name]);
+    process.stdout.on("data", function (data) {
+      res.send(data.toString());
+    });
+  } catch (e) {
+    res.status(500).json({ status: -1 });
+  }
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

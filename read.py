@@ -10,6 +10,7 @@ def yolov5_detect():
     stream1 = os.popen(
         'conda run -n base python detect.py --save-txt --save-conf --weights best.pt --img 640 --conf 0.25 --source testimg')
     output = stream1.read()
+    output = 1
     print(output)
     sys.stdout.flush()
 
@@ -35,8 +36,6 @@ def get_confidence():
 
         x = "D:/Haris/Job/Projects/Air-Quality-Project-3/yolov5/runs/detect/" + latest_dir[12:] + "/labels/" + x
 
-        confidence = 0
-
         with open(x, "r") as file1:
             for line in file1.readlines():
                 y = line.split(' ')
@@ -61,7 +60,7 @@ def del_files():
         file = path + file_name
         if os.path.isfile(file):
             os.remove(file)
-    print('deleting files successful!')
+    print(1)
     sys.stdout.flush()
 
 
@@ -69,13 +68,17 @@ def rename_img():
     old_name = r"D:\Haris\Job\Projects\Air-Quality-Project-3\yolov5\testimg\imageName"
     new_name = r"D:\Haris\Job\Projects\Air-Quality-Project-3\yolov5\testimg\img.jpg"
 
+    x = 0
     if os.path.isfile(new_name):
-        print("The file already exists")
+        x = 1
+    elif os.path.isfile(old_name) == False:
+        x = -1
     else:
         # Rename the file
+        x = 1
         os.rename(old_name, new_name)
 
-    print('Rename File successful!')
+    print(x)
     sys.stdout.flush()
 
 
