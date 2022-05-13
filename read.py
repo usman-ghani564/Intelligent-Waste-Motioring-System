@@ -7,9 +7,6 @@ choice = int(sys.argv[1])
 
 
 def yolov5_detect():
-    # df_1 = df.loc[df['county_name'] == cc]
-    # df_1 = df_1[['year', 'observation_percent']]
-    # output = df_1.to_json()
     stream1 = os.popen(
         'conda run -n base python detect.py --save-txt --save-conf --weights best.pt --img 640 --conf 0.25 --source testimg')
     output = stream1.read()
@@ -44,8 +41,37 @@ def get_confidence():
         sys.stdout.flush()
 
 
+def del_files():
+    path = r"D:\Haris\Job\Projects\Air-Quality-Project-3\yolov5\testimg\\"
+    for file_name in os.listdir(path):
+        # construct full file path
+        file = path + file_name
+        if os.path.isfile(file):
+            os.remove(file)
+    print('deleting files successful!')
+    sys.stdout.flush()
+
+
+def rename_img():
+    old_name = r"D:\Haris\Job\Projects\Air-Quality-Project-3\yolov5\testimg\imageName"
+    new_name = r"D:\Haris\Job\Projects\Air-Quality-Project-3\yolov5\testimg\img.jpg"
+
+    if os.path.isfile(new_name):
+        print("The file already exists")
+    else:
+        # Rename the file
+        os.rename(old_name, new_name)
+
+    print('Rename File successful!')
+    sys.stdout.flush()
+
+
 if __name__ == "__main__":
     if choice == 0:
         yolov5_detect()
     elif choice == 1:
         get_confidence()
+    elif choice == 2:
+        rename_img()
+    elif choice == 3:
+        del_files()
