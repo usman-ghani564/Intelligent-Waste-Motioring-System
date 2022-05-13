@@ -18,24 +18,37 @@ def get_confidence():
     list_of_dirs = glob.glob('runs/detect/*')  # * means all if need specific format then *.csv
     latest_dir = max(list_of_dirs, key=os.path.getctime)
 
-    for root, dirs, files in os.walk(latest_dir):
-        for name in files:
-            if name.endswith((".txt")):
-                x = name
+    pp = "D:/Haris/Job/Projects/Air-Quality-Project-3/yolov5/runs/detect/" + latest_dir[12:] + "/labels"
 
-    x = "D:/Haris/Job/Projects/Air-Quality-Project-3/yolov5/runs/detect/" + latest_dir[12:] + "/labels/" + x
+    dirp = os.listdir(pp)
 
-    confidence = 0
+    flag = True
+    # Checking if the list is empty or not
+    if len(dirp) == 0:
+        flag = False
 
-    with open(x, "r") as file1:
-        for line in file1.readlines():
-            y = line.split(' ')
-            confidence = float(y[-1])
+    if flag == True:
+        for root, dirs, files in os.walk(latest_dir):
+            for name in files:
+                if name.endswith((".txt")):
+                    x = name
 
-    thres_hold = 0.70
-    if confidence >= thres_hold:
-        print(1)
-        sys.stdout.flush()
+        x = "D:/Haris/Job/Projects/Air-Quality-Project-3/yolov5/runs/detect/" + latest_dir[12:] + "/labels/" + x
+
+        confidence = 0
+
+        with open(x, "r") as file1:
+            for line in file1.readlines():
+                y = line.split(' ')
+                confidence = float(y[-1])
+
+        thres_hold = 0.70
+        if confidence >= thres_hold:
+            print(1)
+            sys.stdout.flush()
+        else:
+            print(0)
+            sys.stdout.flush()
     else:
         print(0)
         sys.stdout.flush()
