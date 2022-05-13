@@ -47,17 +47,23 @@ app.post(`/api/airQ`, cors(), (req, res) => {
   res.send(air);
 });
 
+const download = require("download");
+
 app.get("/api/img", async (req, res) => {
-  dest = "./upload";
-  var url =
-    "http://firebasestorage.googleapis.com/v0/b/fyp-project-98f0f.appspot.com/o/images%2FimageName?alt=media&token=2986a839-f2c0-4239-a46f-553a733dee77";
-  var file = fs.createWriteStream(dest);
-  http.get(url, function (response) {
-    response.pipe(file);
-    file.on("finish", function () {
-      file.close();
+  try {
+    // Url of the image
+    const url =
+      "https://firebasestorage.googleapis.com/v0/b/fyp-project-98f0f.appspot.com/o/images%2FimageName?alt=media&token=2986a839-f2c0-4239-a46f-553a733dee77";
+    // Path at which image will get downloaded
+    const filePath = `${__dirname}/files`;
+
+    download(url, filePath).then(() => {
+      console.log("Download Completed");
     });
-  });
+    res.send("download successfull!");
+  } catch (e) {
+    res.send(e.message);
+  }
 });
 
 app.get("/api/yolov5/confidence", (req, res) => {
