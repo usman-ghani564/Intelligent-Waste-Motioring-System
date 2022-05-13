@@ -4,6 +4,7 @@ import 'package:fyp_prototype/models/complaint.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:vector_math/vector_math.dart' as vectorMath;
 import 'dart:math' as math;
+import 'package:http/http.dart' as http;
 
 class ComplaintProvider {
   Function getUserId = () {};
@@ -172,6 +173,26 @@ class ComplaintProvider {
         print('Complaint Registered complaintsList == null!');
         return "Complaint Registered!";
       }*/
+
+      var baseUrl1 = 'http://192.168.1.102:8000';
+      var baseUrl2 = 'http://127.0.0.1:8000';
+
+      var urlDelFlies = Uri.parse(baseUrl1 + '/api/yolov5/delFiles');
+      var delFiles = await http.get(urlDelFlies);
+
+      var urlGetImage = Uri.parse(baseUrl1 + '/api/getimg');
+      var getImage = await http.get(urlGetImage);
+
+      var urlRenameImage = Uri.parse(baseUrl1 + '/api/yolov5/rename_img');
+      var renameImage = await http.get(urlRenameImage);
+
+      var urlYolo = Uri.parse(baseUrl1 + '/api/yolov5');
+      var yolo = await http.get(urlYolo);
+
+      var urlConfidence = Uri.parse(baseUrl1 + '/api/yolov5/confidence');
+      var considence = await http.get(urlConfidence);
+      //print('Response status: ${response.statusCode}');
+      //print('Response body: ${response.body}');
 
       var data = {
         'uid': complaint.getUserId,
