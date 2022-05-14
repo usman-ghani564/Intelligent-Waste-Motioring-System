@@ -174,54 +174,80 @@ class ComplaintProvider {
         return "Complaint Registered!";
       }*/
 
+      String res = '';
+
       var baseUrl1 = 'http://192.168.1.102:8000';
       var baseUrl2 = 'http://127.0.0.1:8000';
 
       var urlDelFlies = Uri.parse(baseUrl1 + '/api/yolov5/delFiles');
       var delFiles = await http.get(urlDelFlies);
 
-      var urlGetImage = Uri.parse(baseUrl1 + '/api/getimg');
-      var getImage = await http.get(urlGetImage);
+      if (delFiles == '1') {
+        var urlGetImage = Uri.parse(baseUrl1 + '/api/getimg');
+        var getImage = await http.get(urlGetImage);
 
-      var urlRenameImage = Uri.parse(baseUrl1 + '/api/yolov5/rename_img');
-      var renameImage = await http.get(urlRenameImage);
+        if (getImage == '1') {
+          var urlRenameImage = Uri.parse(baseUrl1 + '/api/yolov5/rename_img');
+          var renameImage = await http.get(urlRenameImage);
 
-      var urlYolo = Uri.parse(baseUrl1 + '/api/yolov5');
-      var yolo = await http.get(urlYolo);
+          if (renameImage == '1') {
+            var urlYolo = Uri.parse(baseUrl1 + '/api/yolov5');
+            var yolo = await http.get(urlYolo);
 
-      var urlConfidence = Uri.parse(baseUrl1 + '/api/yolov5/confidence');
-      var considence = await http.get(urlConfidence);
+            if (yolo == '1') {
+              var urlConfidence =
+                  Uri.parse(baseUrl1 + '/api/yolov5/confidence');
+              var confidence = await http.get(urlConfidence);
+
+              if (confidence == '1') {
+                res = 'Garbage detected';
+              } else {
+                res = 'Something went wrong';
+              }
+            }
+          } else {
+            res = 'Something went wrong';
+          }
+        } else {
+          res = 'Something went wrong';
+        }
+      } else {
+        res = 'Something went wrong';
+      }
+
       //print('Response status: ${response.statusCode}');
       //print('Response body: ${response.body}');
+      if (res == 'Garbage detected') {
+        var data = {
+          'uid': complaint.getUserId,
+          'longitude': complaint.getLongitude,
+          'latitude': complaint.getLatitude,
+          'status': complaint.getStatus,
+          'dateTime': complaint.getDateTime.toString(),
+          'imageUrl': complaint.getImageUrl == '' ? '' : complaint.getImageUrl,
+        };
+        final _firebaseStorage = FirebaseStorage.instanceFor(
+            bucket: "gs://fyp-project-98f0f.appspot.com");
+        var file = File(complaint.imageFile.path);
 
-      var data = {
-        'uid': complaint.getUserId,
-        'longitude': complaint.getLongitude,
-        'latitude': complaint.getLatitude,
-        'status': complaint.getStatus,
-        'dateTime': complaint.getDateTime.toString(),
-        'imageUrl': complaint.getImageUrl == '' ? '' : complaint.getImageUrl,
-      };
-      final _firebaseStorage = FirebaseStorage.instanceFor(
-          bucket: "gs://fyp-project-98f0f.appspot.com");
-      var file = File(complaint.imageFile.path);
+        final longitude = data['longitude'];
+        final latitude = data['latitude'];
+        final uid = data['uid'];
+        final time = data['dateTime'].toString();
 
-      final longitude = data['longitude'];
-      final latitude = data['latitude'];
-      final uid = data['uid'];
-      final time = data['dateTime'].toString();
+        var snapshot = await _firebaseStorage
+            .ref()
+            .child('images/$longitude$latitude$uid$time')
+            .putFile(file);
 
-      var snapshot = await _firebaseStorage
-          .ref()
-          .child('images/$longitude$latitude$uid$time')
-          .putFile(file);
+        await snapshot.ref.getDownloadURL().then((value) async {
+          data['imageUrl'] = value;
+          await _firebaseDatabase.ref().child("complaints").push().set(data);
+        });
 
-      await snapshot.ref.getDownloadURL().then((value) async {
-        data['imageUrl'] = value;
-        await _firebaseDatabase.ref().child("complaints").push().set(data);
-      });
-
-      return 'Registered!';
+        return 'Registered!';
+      }
+      return 'Not Registered';
     } catch (e) {
       print('Error: $e');
       return e.toString();

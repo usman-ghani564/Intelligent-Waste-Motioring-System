@@ -206,7 +206,7 @@ class _RegistationDetailsWidgetState extends State<RegistationDetailsWidget> {
                           ),
                         )
                         .then((value) => {
-                              if (value == '')
+                              if (value == 'Registered')
                                 {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
