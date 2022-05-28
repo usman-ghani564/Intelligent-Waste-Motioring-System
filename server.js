@@ -6,12 +6,16 @@ const app = express();
 var http = require("http");
 var fs = require("fs");
 const download = require("download");
+const morgan = require("morgan");
 
 var corsOptions = {
   origin: "http://localhost:3000",
 };
 app.use(cors(corsOptions));
 app.use(express.json());
+
+app.use(morgan("dev"));
+
 const port = process.env.PORT || 1337;
 
 app.use(bodyParser.json());
@@ -68,8 +72,8 @@ app.get("/api/getimg", async (req, res) => {
 
     download(url, filePath).then(() => {
       console.log("Download Completed");
+      res.send({ status: "1" });
     });
-    res.send({ status: 1 });
   } catch (e) {
     res.send(e.message);
   }
@@ -81,7 +85,7 @@ app.get("/api/yolov5/delFiles", (req, res) => {
   var spawn = require("child_process").spawn;
   var process = spawn("python", ["./read.py", choice, name]);
   process.stdout.on("data", function (data) {
-    res.send(data.toString());
+    res.send(data.toString()[0]);
   });
 });
 
@@ -91,7 +95,7 @@ app.get("/api/yolov5/rename_img", (req, res) => {
   var spawn = require("child_process").spawn;
   var process = spawn("python", ["./read.py", choice, name]);
   process.stdout.on("data", function (data) {
-    res.send(data.toString());
+    res.send(data.toString()[0]);
   });
 });
 
@@ -101,7 +105,7 @@ app.get("/api/yolov5/confidence", (req, res) => {
   var spawn = require("child_process").spawn;
   var process = spawn("python", ["./read.py", choice, name]);
   process.stdout.on("data", function (data) {
-    res.send(data.toString());
+    res.send(data.toString()[0]);
   });
 });
 
@@ -112,7 +116,7 @@ app.get("/api/yolov5", (req, res) => {
     var spawn = require("child_process").spawn;
     var process = spawn("python", ["./read.py", choice, name]);
     process.stdout.on("data", function (data) {
-      res.send(data.toString());
+      res.send(data.toString()[0]);
     });
   } catch (e) {
     res.status(500).json({ status: -1 });
