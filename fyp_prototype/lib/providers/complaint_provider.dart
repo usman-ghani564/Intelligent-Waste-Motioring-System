@@ -268,6 +268,17 @@ class ComplaintProvider {
     }
   }
 
+  Future<String> removeComplaint(String complaintId) async {
+    try {
+      print('Complaint ID: ' + complaintId);
+      await _firebaseDatabase.ref('complaints').child(complaintId).remove();
+      return 'Removed!';
+    } catch (e) {
+      print('Error: $e');
+      return 'Error';
+    }
+  }
+
   Future<List<dynamic>> FilterComplaintsByUserId() async {
     try {
       List<dynamic> complaintsList = await getAllComplaint();

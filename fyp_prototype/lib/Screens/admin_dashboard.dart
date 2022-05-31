@@ -123,7 +123,7 @@ class AdminDashboard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ComplaintList(),
+                  builder: (context) => ComplaintList(getUserId),
                 ),
               );
             },

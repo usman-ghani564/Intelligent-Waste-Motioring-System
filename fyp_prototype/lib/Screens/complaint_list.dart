@@ -1,180 +1,158 @@
 import 'package:expandable/expandable.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
-import 'package:location/location.dart' as loc;
 import '../main.dart';
+import '../providers/complaint_provider.dart';
 
 class ComplaintList extends StatefulWidget {
-  const ComplaintList({Key? key}) : super(key: key);
-
+  late Function getUserId;
+  ComplaintList(Function getuid) {
+    getUserId = getuid;
+  }
 
   @override
   State<ComplaintList> createState() => _ComplaintListState();
-
-
 }
 
 class _ComplaintListState extends State<ComplaintList> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final database = FirebaseDatabase.instanceFor( app: firebaseApp, databaseURL:'https://fyp-project-98f0f-default-rtdb.asia-southeast1.firebasedatabase.app');
+  final database = FirebaseDatabase.instanceFor(
+      app: firebaseApp,
+      databaseURL:
+          'https://fyp-project-98f0f-default-rtdb.asia-southeast1.firebasedatabase.app');
   DatabaseReference ref = FirebaseDatabase.instance.ref("complaints");
-  List<dynamic> complainList=[];
-  List<String> complainKeys=[];
-  List<dynamic> originalComplainList=[];
+  List<dynamic> complainList = [];
+  List<String> complainKeys = [];
+  List<dynamic> originalComplainList = [];
+  List<Map<dynamic, dynamic>> mapList = [];
 
-   updateState(dynamic val) async{
-     print("val");
-     print(val['dateTime']);
+  updateState(dynamic val) async {
     setState(() {
       complainList.remove(val);
 
       originalComplainList.remove(val);
     });
-
   }
 
-  Future<void> printFirebase () async {
-    print("complain");
+  Future<void> printFirebase() async {
     DatabaseEvent event = await database.ref('complaints').once();
     //database.ref().child("complaints").once().then((value)=> print(value.));
-  List<dynamic> res = [];
-   Map<dynamic,dynamic> map={};
-   var count =0;
-   event.snapshot.children.forEach((element) {
-     print('print');
-     print(count++);
-     print(element.value);
-     if (this.mounted) {
-       setState(() {
-         complainList.add(element.value);
-         complainKeys.add(element.key.toString());
-         originalComplainList.add(element.value);
-       });
-     }
-     res.add( element.value);
-
-   });
-
-    print(res[0]["uid"]);
-    print(complainKeys);
-    print('after');
+    List<dynamic> res = [];
+    Map<dynamic, dynamic> map = {};
+    var count = 0;
+    event.snapshot.children.forEach((element) {
+      if (mounted) {
+        setState(() {
+          mapList.add({element.key: element.value});
+          complainList.add(element.value);
+          complainKeys.add(element.key.toString());
+          originalComplainList.add(element.value);
+        });
+      }
+      res.add(element.value);
+    });
   }
 
   String dropdownValue = 'SortBy';
-  var j=0;
- @override
- void initState() {
-    // TODO: implement initState
-   printFirebase();
+  var j = 0;
+  @override
+  void initState() {
+    printFirebase();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color(0XFF2C3539),
       appBar: AppBar(
         backgroundColor: Colors.black,
         actions: [
-        DropdownButton<String>(
-        value: dropdownValue,
-        icon: const Icon(Icons.arrow_downward),
-        elevation: 16,
-        style: const TextStyle(color: Colors.blue),
-        underline: Container(
-          height: 2,
-          color: Colors.blue,
-        ),
-        onChanged: (String? newValue) {
-          List<dynamic> newcomplainList=[];
-          if(newValue == "Registered"){
-            for ( var i in originalComplainList){
-              if(i["status"]=="Registered"){
-                newcomplainList.add(i);
+          DropdownButton<String>(
+            value: dropdownValue,
+            icon: const Icon(Icons.arrow_downward),
+            elevation: 16,
+            style: const TextStyle(color: Colors.blue),
+            underline: Container(
+              height: 2,
+              color: Colors.blue,
+            ),
+            onChanged: (String? newValue) {
+              List<dynamic> newcomplainList = [];
+              if (newValue == "Registered") {
+                for (var i in originalComplainList) {
+                  if (i["status"] == "Registered") {
+                    newcomplainList.add(i);
+                  }
+                }
+                setState(() {
+                  dropdownValue = newValue!;
+                  complainList = newcomplainList;
+                });
               }
-            }
-            setState(() {
-              dropdownValue = newValue!;
-              complainList = newcomplainList;
-            });
-          }
-          if(newValue == "Completed"){
-            for ( var i in originalComplainList){
-              if(i["status"]=="Completed"){
-                newcomplainList.add(i);
+              if (newValue == "Completed") {
+                for (var i in originalComplainList) {
+                  if (i["status"] == "Completed") {
+                    newcomplainList.add(i);
+                  }
+                }
+                setState(() {
+                  dropdownValue = newValue!;
+                  complainList = newcomplainList;
+                });
               }
-            }
-            setState(() {
-              dropdownValue = newValue!;
-              complainList = newcomplainList;
-            });
-          }
-          if(newValue == "SortBy"){
-
-            setState(() {
-              dropdownValue = newValue!;
-              complainList = originalComplainList;
-            });
-          }
-
-        },
-        items: <String>['SortBy', 'Registered', "Pending","Completed"]
-            .map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
-      )
+              if (newValue == "SortBy") {
+                setState(() {
+                  dropdownValue = newValue!;
+                  complainList = originalComplainList;
+                });
+              }
+            },
+            items: <String>['SortBy', 'Registered', "Pending", "Completed"]
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          )
         ],
       ),
       body: Center(
-
         child: ListView(
           //mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
-
-            for ( var i  in complainList)
-
-              Card1(i,updateState)
-
-
-
-
+            for (var i in complainList)
+              Card1(i, updateState, widget.getUserId, mapList)
           ],
-
         ),
-
       ),
-
-
-
     );
   }
 }
 
-
 class Card1 extends StatefulWidget {
-  var title,description,status ,lat, lang,cid;
-  String key1 ="";
+  var title, description, status, lat, lang, cid;
+  String key1 = "";
   dynamic complain_obj;
-  Function deleteCard= (dynamic val) {};
+  Function deleteCard = (dynamic val) {};
+  late Function getUserId;
+  List<Map<dynamic, dynamic>> mapList = [];
 
-  Card1(dynamic complain,Function delcard){
-
-    title=complain['uid'];
-    description=complain['dateTime'];
+  Card1(dynamic complain, Function delcard, Function getuid,
+      List<Map<dynamic, dynamic>> mList) {
+    title = complain['uid'];
+    description = complain['dateTime'];
     status = complain['status'];
     lat = complain['latitude'];
-    lang=  complain['longitude'];
+    lang = complain['longitude'];
     // key1=k;
-    deleteCard=delcard;
-    complain_obj=complain;
+    deleteCard = delcard;
+    complain_obj = complain;
+    getUserId = getuid;
+
+    mapList = mList;
   }
 
   @override
@@ -182,93 +160,97 @@ class Card1 extends StatefulWidget {
 }
 
 class _Card1State extends State<Card1> {
-  final database = FirebaseDatabase.instanceFor( app: firebaseApp, databaseURL:'https://fyp-project-98f0f-default-rtdb.asia-southeast1.firebasedatabase.app');
+  final database = FirebaseDatabase.instanceFor(
+      app: firebaseApp,
+      databaseURL:
+          'https://fyp-project-98f0f-default-rtdb.asia-southeast1.firebasedatabase.app');
   DatabaseReference ref = FirebaseDatabase.instance.ref("complaints");
-  var address ="";
+  var address = "";
   @override
   void initState() {
     // TODO: implement initState
 
-    _getAddress(widget.lat,widget.lang)
-        .then((value) {
-          print(value.last.street);
+    _getAddress(widget.lat, widget.lang).then((value) {
+      print(value.last.street);
       setState(() {
-        address = value.last.street.toString()+value.last.locality.toString();
+        address = value.last.street.toString() + value.last.locality.toString();
       });
-
     });
     super.initState();
   }
-  Future <List<geo.Placemark>> _getAddress(double? lat, double? lang) async {
+
+  Future<List<geo.Placemark>> _getAddress(double? lat, double? lang) async {
     //final coordinates = new Coordinates(lat, lang);
     List<geo.Placemark> placemarks =
-    await geo.placemarkFromCoordinates(lat!, lang!);
+        await geo.placemarkFromCoordinates(lat!, lang!);
     return placemarks;
   }
-  @override
 
+  @override
   Widget build(BuildContext context) {
-    print("key = "+widget.key1);
     return ExpandableNotifier(
         child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Card(
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 10,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.lightGreenAccent,
-                      shape: BoxShape.rectangle,
-                    ),
-                  ),
+      padding: const EdgeInsets.all(10),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 10,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.lightGreenAccent,
+                  shape: BoxShape.rectangle,
                 ),
-                ScrollOnExpand(
-                  scrollOnExpand: true,
-                  scrollOnCollapse: false,
-                  child: ExpandablePanel(
-                    theme: const ExpandableThemeData(
-                      headerAlignment: ExpandablePanelHeaderAlignment.center,
-                      tapBodyToCollapse: true,
-                    ),
-                    header: Padding(
-                        padding: EdgeInsets.all(10),
+              ),
+            ),
+            ScrollOnExpand(
+              scrollOnExpand: true,
+              scrollOnCollapse: false,
+              child: ExpandablePanel(
+                theme: const ExpandableThemeData(
+                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                  tapBodyToCollapse: true,
+                ),
+                header: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(
+                      address,
+                    )),
+                collapsed: const Text(
+                  "More Details...",
+                  softWrap: true,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                expanded: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    // for (var _ in Iterable.generate(5))
+                    Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
                         child: Text(
-                          address,
-
+                          widget.title,
+                          softWrap: true,
+                          overflow: TextOverflow.fade,
                         )),
-                    collapsed: Text(
-                      "More Details...",
-                      softWrap: true,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    expanded: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        // for (var _ in Iterable.generate(5))
-                        Padding(
-                            padding: EdgeInsets.only(bottom: 10),
-                            child: Text(
-                              widget.title,
-                              softWrap: true,
-                              overflow: TextOverflow.fade,
-                            )),
-                        Padding(
-                            padding: EdgeInsets.only(bottom: 10),
-                            child: Text(
-                              widget.status,
-                              softWrap: true,
-                              overflow: TextOverflow.fade,
-                            )),
+                    Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Text(
+                          'status: ' + widget.status,
+                          softWrap: true,
+                          overflow: TextOverflow.fade,
+                        )),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: ElevatedButton(
-                            child: Text("Edit"),
-                            onPressed: ()async {
-                             await ref.child("-N-4fZPHzKe3Xaw8KpOz").remove();
+                            child: const Text("Edit"),
+                            onPressed: () async {
+                              await ref.child("-N-4fZPHzKe3Xaw8KpOz").remove();
                               //key "-N-4fZPHzKe3Xaw8KpOz"
 
                               // await ref2.remove();
@@ -278,30 +260,54 @@ class _Card1State extends State<Card1> {
                         Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: ElevatedButton(
-                            style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),
-                            child: Text("delete"),
+                            style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.red)),
+                            child: const Text("delete"),
                             onPressed: () {
-                              widget.deleteCard(widget.complain_obj);
+                              ComplaintProvider complaintProvider =
+                                  ComplaintProvider(
+                                FirebaseDatabase.instanceFor(
+                                    app: firebaseApp,
+                                    databaseURL:
+                                        'https://fyp-project-98f0f-default-rtdb.asia-southeast1.firebasedatabase.app'),
+                                widget.getUserId,
+                              );
+                              String key = '';
+                              for (var i in widget.mapList) {
+                                for (var entry in i.entries) {
+                                  if (widget.title == entry.value['uid'] &&
+                                      widget.lat == entry.value['latitude'] &&
+                                      widget.lang == entry.value['longitude'] &&
+                                      widget.status == entry.value['status']) {
+                                    key = entry.key;
+                                  }
+                                }
+                              }
+                              complaintProvider.removeComplaint(key);
                             },
                           ),
                         )
                       ],
                     ),
-                    builder: (_, collapsed, expanded) {
-                      return Padding(
-                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                        child: Expandable(
-                          collapsed: collapsed,
-                          expanded: expanded,
-                          theme: const ExpandableThemeData(crossFadePoint: 0),
-                        ),
-                      );
-                    },
-                  ),
+                  ],
                 ),
-              ],
+                builder: (_, collapsed, expanded) {
+                  return Padding(
+                    padding:
+                        const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                    child: Expandable(
+                      collapsed: collapsed,
+                      expanded: expanded,
+                      theme: const ExpandableThemeData(crossFadePoint: 0),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        ));
+          ],
+        ),
+      ),
+    ));
   }
 }
