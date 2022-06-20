@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp_prototype/Screens/admin_maps_screen.dart';
 import 'package:fyp_prototype/Screens/complaint_list.dart';
 import 'package:fyp_prototype/Screens/register_complaint.dart';
+import 'package:fyp_prototype/Screens/statistics_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:fyp_prototype/Screens/faq_screen.dart';
 
@@ -129,6 +130,19 @@ class AdminDashboard extends StatelessWidget {
             },
             child: menuItem(context, 'Complaints',
                 'https://assets7.lottiefiles.com/packages/lf20_ssIwdK.json'),
+          ),
+          const SizedBox(height: 20),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const StatisticsScreen(),
+                ),
+              );
+            },
+            child: menuItem(context, 'Statistics',
+                'https://assets2.lottiefiles.com/packages/lf20_i2eyukor.json'),
           ),
         ],
       ),
