@@ -174,6 +174,35 @@ class ComplaintProvider {
         return "Complaint Registered!";
       }*/
 
+      String imageUrl = '';
+
+      var data = {
+        'uid': complaint.getUserId,
+        'longitude': complaint.getLongitude,
+        'latitude': complaint.getLatitude,
+        'status': complaint.getStatus,
+        'dateTime': complaint.getDateTime.toString(),
+        'imageUrl': complaint.getImageUrl == '' ? '' : complaint.getImageUrl,
+      };
+      final _firebaseStorage = FirebaseStorage.instanceFor(
+          bucket: "gs://fyp-project-98f0f.appspot.com");
+      var file = File(complaint.imageFile.path);
+
+      final longitude = data['longitude'];
+      final latitude = data['latitude'];
+      final uid = data['uid'];
+      final time = data['dateTime'].toString();
+
+      var snapshot = await _firebaseStorage
+          .ref()
+          .child('images/$longitude$latitude$uid$time')
+          .putFile(file);
+
+      await snapshot.ref.getDownloadURL().then((value) async {
+        data['imageUrl'] = value;
+        imageUrl = value;
+      });
+
       String res = '';
 
       var baseUrl1 = 'http://192.168.1.102:8000';
@@ -218,33 +247,7 @@ class ComplaintProvider {
       //print('Response status: ${response.statusCode}');
       //print('Response body: ${response.body}');
       if (res == 'Garbage detected') {
-        var data = {
-          'uid': complaint.getUserId,
-          'longitude': complaint.getLongitude,
-          'latitude': complaint.getLatitude,
-          'status': complaint.getStatus,
-          'dateTime': complaint.getDateTime.toString(),
-          'imageUrl': complaint.getImageUrl == '' ? '' : complaint.getImageUrl,
-        };
-        final _firebaseStorage = FirebaseStorage.instanceFor(
-            bucket: "gs://fyp-project-98f0f.appspot.com");
-        var file = File(complaint.imageFile.path);
-
-        final longitude = data['longitude'];
-        final latitude = data['latitude'];
-        final uid = data['uid'];
-        final time = data['dateTime'].toString();
-
-        var snapshot = await _firebaseStorage
-            .ref()
-            .child('images/$longitude$latitude$uid$time')
-            .putFile(file);
-
-        await snapshot.ref.getDownloadURL().then((value) async {
-          data['imageUrl'] = value;
-          await _firebaseDatabase.ref().child("complaints").push().set(data);
-        });
-
+        await _firebaseDatabase.ref().child("complaints").push().set(data);
         return 'Registered!';
       }
       return 'Not Registered';
