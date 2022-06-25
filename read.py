@@ -42,6 +42,7 @@ def get_confidence():
                 confidence = float(y[-1])
 
         thres_hold = 0.60
+
         if confidence >= thres_hold:
             print(1)
             sys.stdout.flush()

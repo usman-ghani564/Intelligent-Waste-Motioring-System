@@ -62,20 +62,18 @@ app.get("/api/yolov5", (req, res) => {
   });
 });
 
-app.get("/api/getimg", async (req, res) => {
+app.post("/api/getimg", async (req, res) => {
+  const { url } = req.body;
+  console.log(url);
   try {
-    // Url of the image
-    const url =
-      "https://firebasestorage.googleapis.com/v0/b/fyp-project-98f0f.appspot.com/o/images%2FimageName?alt=media&token=2986a839-f2c0-4239-a46f-553a733dee77";
     // Path at which image will get downloaded
     const filePath = `${__dirname}/testimg`;
-
     download(url, filePath).then(() => {
       console.log("Download Completed");
-      res.send({ status: "1" });
+      res.status(200).json({ status: "1" });
     });
   } catch (e) {
-    res.send(e.message);
+    res.status(500).json({ message: e.message });
   }
 });
 
@@ -85,7 +83,9 @@ app.get("/api/yolov5/delFiles", (req, res) => {
   var spawn = require("child_process").spawn;
   var process = spawn("python", ["./read.py", choice, name]);
   process.stdout.on("data", function (data) {
-    res.send(data.toString()[0]);
+    res.status(200).json({
+      data: data.toString()[0],
+    });
   });
 });
 
@@ -95,7 +95,9 @@ app.get("/api/yolov5/rename_img", (req, res) => {
   var spawn = require("child_process").spawn;
   var process = spawn("python", ["./read.py", choice, name]);
   process.stdout.on("data", function (data) {
-    res.send(data.toString()[0]);
+    res.status(200).json({
+      data: data.toString()[0],
+    });
   });
 });
 
@@ -105,7 +107,9 @@ app.get("/api/yolov5/confidence", (req, res) => {
   var spawn = require("child_process").spawn;
   var process = spawn("python", ["./read.py", choice, name]);
   process.stdout.on("data", function (data) {
-    res.send(data.toString()[0]);
+    res.status(200).json({
+      data: data.toString()[0],
+    });
   });
 });
 
@@ -116,7 +120,9 @@ app.get("/api/yolov5", (req, res) => {
     var spawn = require("child_process").spawn;
     var process = spawn("python", ["./read.py", choice, name]);
     process.stdout.on("data", function (data) {
-      res.send(data.toString()[0]);
+      res.status(200).json({
+        data: data.toString()[0],
+      });
     });
   } catch (e) {
     res.status(500).json({ status: -1 });
