@@ -2,6 +2,9 @@ import sys
 import os
 import glob
 
+from os import listdir
+from os.path import isfile, join
+
 value = sys.argv[2]
 choice = int(sys.argv[1])
 
@@ -66,18 +69,23 @@ def del_files():
 
 
 def rename_img():
-    old_name = r"D:\Haris\Job\Projects\Air-Quality-Project-3\yolov5\testimg\imageName"
+    path = r"D:\Haris\Job\Projects\Air-Quality-Project-3\yolov5\testimg"
     new_name = r"D:\Haris\Job\Projects\Air-Quality-Project-3\yolov5\testimg\img.jpg"
+    fname = 0
+    for f in listdir(path):
+        fname = join(path, f)
 
+    file = [f for f in listdir(path) if isfile(join(path, f))]
     x = 0
+
     if os.path.isfile(new_name):
         x = 1
-    elif os.path.isfile(old_name) == False:
+    elif len(file) > 1:
         x = -1
     else:
         # Rename the file
         x = 1
-        os.rename(old_name, new_name)
+        os.rename(fname, new_name)
 
     print(x)
     sys.stdout.flush()
