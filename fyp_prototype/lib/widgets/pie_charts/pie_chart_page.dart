@@ -8,8 +8,11 @@ class PieChartPage extends StatelessWidget {
   final Color barColor = Colors.white;
   final Color barBackgroundColor = const Color(0xff72d8bf);
   final double width = 22;
+  late Function getUserId;
 
-  const PieChartPage({Key? key}) : super(key: key);
+  PieChartPage(Function getuid) {
+    getUserId = getuid;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +22,12 @@ class PieChartPage extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(28.0),
         child: ListView(
-          children: const <Widget>[
+          children: <Widget>[
             //PieChartSample1(),
             /*SizedBox(
               height: 12,
             ),*/
-            PieChartSample2(),
+            PieChartSample2(getUserId),
             /*SizedBox(
               height: 12,
             ),

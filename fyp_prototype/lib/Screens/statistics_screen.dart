@@ -15,7 +15,10 @@ import '../utils/platform_info.dart';
 //import 'scatter_chart/scatter_chart_page.dart';
 
 class StatisticsScreen extends StatefulWidget {
-  const StatisticsScreen({Key? key}) : super(key: key);
+  Function getUserId = () {};
+  StatisticsScreen(Function getuid) {
+    getUserId = getuid;
+  }
 
   @override
   State<StatisticsScreen> createState() => _StatisticsScreenState();
@@ -27,11 +30,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   final _controller = PageController(initialPage: 0);
   final _duration = const Duration(milliseconds: 300);
   final _curve = Curves.easeInOutCubic;
-  final _pages = const [
+  final _pages = [
     //LineChartPage(),
     BarChartPage(),
     //BarChartPage2(),
-    PieChartPage(),
     //LineChartPage2(),
     //LineChartPage3(),
     //LineChartPage4(),
@@ -45,6 +47,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
+    _pages.add(PieChartPage(widget.getUserId));
     _controller.addListener(() {
       setState(() {
         _currentPage = _controller.page!.round();

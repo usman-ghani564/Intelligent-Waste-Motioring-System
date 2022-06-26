@@ -165,7 +165,7 @@ class _UserGoogleMapsScreenState extends State<UserGoogleMapsScreen> {
             'Complaints Locations',
             style: TextStyle(color: Colors.black),
           ),
-          backgroundColor: const Color(0xFFCCFF00),
+          backgroundColor: const Color(0xFFF8CB2E),
         ),
         body: Stack(
           children: <Widget>[

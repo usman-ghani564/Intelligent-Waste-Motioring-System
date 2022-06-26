@@ -65,9 +65,9 @@ class _ComplaintListState extends State<ComplaintList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0XFF2C3539),
+      backgroundColor: const Color(0XFF006E7F),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color(0xFFF8CB2E),
         actions: [
           DropdownButton<String>(
             value: dropdownValue,
@@ -133,8 +133,9 @@ class _ComplaintListState extends State<ComplaintList> {
 }
 
 class Card1 extends StatefulWidget {
-  var title, description, status, lat, lang, cid;
+  var title, description, status, lat, lang, cid, imageUrl;
   String key1 = "";
+  dynamic complain2;
   dynamic complain_obj;
   Function deleteCard = (dynamic val) {};
   late Function getUserId;
@@ -142,16 +143,18 @@ class Card1 extends StatefulWidget {
 
   Card1(dynamic complain, Function delcard, Function getuid,
       List<Map<dynamic, dynamic>> mList) {
+    print(complain['imageUrl']);
     title = complain['uid'];
     description = complain['dateTime'];
     status = complain['status'];
     lat = complain['latitude'];
     lang = complain['longitude'];
+    imageUrl = complain['imageUrl'];
     // key1=k;
     deleteCard = delcard;
     complain_obj = complain;
     getUserId = getuid;
-
+    complain2 = complain;
     mapList = mList;
   }
 
@@ -199,7 +202,7 @@ class _Card1State extends State<Card1> {
               height: 10,
               child: Container(
                 decoration: const BoxDecoration(
-                  color: Colors.lightGreenAccent,
+                  color: const Color(0xFFF8CB2E),
                   shape: BoxShape.rectangle,
                 ),
               ),
@@ -214,8 +217,31 @@ class _Card1State extends State<Card1> {
                 ),
                 header: Padding(
                     padding: const EdgeInsets.all(10),
-                    child: Text(
-                      address,
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: NetworkImage(widget.imageUrl),
+                                fit: BoxFit.cover),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(100),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Flexible(
+                          child: Text(
+                            address,
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
                     )),
                 collapsed: const Text(
                   "More Details...",
@@ -230,7 +256,7 @@ class _Card1State extends State<Card1> {
                     Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: Text(
-                          widget.title,
+                          widget.description,
                           softWrap: true,
                           overflow: TextOverflow.fade,
                         )),
@@ -248,12 +274,32 @@ class _Card1State extends State<Card1> {
                         Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: ElevatedButton(
-                            child: const Text("Edit"),
-                            onPressed: () async {
-                              await ref.child("-N-4fZPHzKe3Xaw8KpOz").remove();
-                              //key "-N-4fZPHzKe3Xaw8KpOz"
-
-                              // await ref2.remove();
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    const Color(0XFF006E7F))),
+                            child: const Text("Cancel Complaint"),
+                            onPressed: () {
+                              ComplaintProvider complaintProvider =
+                                  ComplaintProvider(
+                                FirebaseDatabase.instanceFor(
+                                    app: firebaseApp,
+                                    databaseURL:
+                                        'https://fyp-project-98f0f-default-rtdb.asia-southeast1.firebasedatabase.app'),
+                                widget.getUserId,
+                              );
+                              String key = '';
+                              for (var i in widget.mapList) {
+                                for (var entry in i.entries) {
+                                  if (widget.title == entry.value['uid'] &&
+                                      widget.lat == entry.value['latitude'] &&
+                                      widget.lang == entry.value['longitude'] &&
+                                      widget.status == entry.value['status']) {
+                                    key = entry.key;
+                                  }
+                                }
+                              }
+                              complaintProvider.editComplaint(
+                                  key, widget.complain2, 'Canceled');
                             },
                           ),
                         ),

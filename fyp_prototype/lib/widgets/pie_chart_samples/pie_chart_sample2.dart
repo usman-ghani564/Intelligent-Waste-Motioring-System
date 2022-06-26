@@ -1,9 +1,15 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_prototype/main.dart';
+import '../../providers/complaint_provider.dart';
 import 'indicators.dart';
 
 class PieChartSample2 extends StatefulWidget {
-  const PieChartSample2({Key? key}) : super(key: key);
+  late Function getUserId;
+  PieChartSample2(Function getuid, {Key? key}) : super(key: key) {
+    getUserId = getuid;
+  }
 
   @override
   State<StatefulWidget> createState() => PieChart2State();
@@ -28,25 +34,26 @@ class PieChart2State extends State {
                 aspectRatio: 1,
                 child: PieChart(
                   PieChartData(
-                      pieTouchData: PieTouchData(touchCallback:
-                          (FlTouchEvent event, pieTouchResponse) {
-                        setState(() {
-                          if (!event.isInterestedForInteractions ||
-                              pieTouchResponse == null ||
-                              pieTouchResponse.touchedSection == null) {
-                            touchedIndex = -1;
-                            return;
-                          }
-                          touchedIndex = pieTouchResponse
-                              .touchedSection!.touchedSectionIndex;
-                        });
-                      }),
-                      borderData: FlBorderData(
-                        show: false,
-                      ),
-                      sectionsSpace: 0,
-                      centerSpaceRadius: 40,
-                      sections: showingSections()),
+                    pieTouchData: PieTouchData(
+                        touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                      setState(() {
+                        if (!event.isInterestedForInteractions ||
+                            pieTouchResponse == null ||
+                            pieTouchResponse.touchedSection == null) {
+                          touchedIndex = -1;
+                          return;
+                        }
+                        touchedIndex = pieTouchResponse
+                            .touchedSection!.touchedSectionIndex;
+                      });
+                    }),
+                    borderData: FlBorderData(
+                      show: false,
+                    ),
+                    sectionsSpace: 0,
+                    centerSpaceRadius: 40,
+                    sections: showingSections(),
+                  ),
                 ),
               ),
             ),
@@ -57,7 +64,7 @@ class PieChart2State extends State {
               children: const <Widget>[
                 Indicator(
                   color: Color(0xff0293ee),
-                  text: 'First',
+                  text: 'Registered',
                   isSquare: true,
                 ),
                 SizedBox(
@@ -65,7 +72,7 @@ class PieChart2State extends State {
                 ),
                 Indicator(
                   color: Color(0xfff8b250),
-                  text: 'Second',
+                  text: 'Completed',
                   isSquare: true,
                 ),
                 SizedBox(
@@ -73,15 +80,7 @@ class PieChart2State extends State {
                 ),
                 Indicator(
                   color: Color(0xff845bef),
-                  text: 'Third',
-                  isSquare: true,
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Indicator(
-                  color: Color(0xff13d38e),
-                  text: 'Fourth',
+                  text: 'Canceled',
                   isSquare: true,
                 ),
                 SizedBox(
@@ -99,7 +98,14 @@ class PieChart2State extends State {
   }
 
   List<PieChartSectionData> showingSections() {
-    return List.generate(4, (i) {
+    /*ComplaintProvider complaintProvider = ComplaintProvider(
+        FirebaseDatabase.instanceFor(
+            app: firebaseApp,
+            databaseURL:
+                'https://fyp-project-98f0f-default-rtdb.asia-southeast1.firebasedatabase.app'),
+        widget.getUserId);
+    complaintProvider.getComplaintsPercentage();*/
+    return List.generate(3, (i) {
       final isTouched = i == touchedIndex;
       final fontSize = isTouched ? 25.0 : 16.0;
       final radius = isTouched ? 60.0 : 50.0;
@@ -129,18 +135,7 @@ class PieChart2State extends State {
         case 2:
           return PieChartSectionData(
             color: const Color(0xff845bef),
-            value: 15,
-            title: '15%',
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
-          );
-        case 3:
-          return PieChartSectionData(
-            color: const Color(0xff13d38e),
-            value: 15,
+            value: 30,
             title: '15%',
             radius: radius,
             titleStyle: TextStyle(

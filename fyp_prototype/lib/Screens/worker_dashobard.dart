@@ -179,8 +179,8 @@ class _WorkerDashboardState extends State<WorkerDashboard> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      WorkerComplaintList(widget.lat, widget.lon),
+                  builder: (context) => WorkerComplaintList(
+                      widget.lat, widget.lon, widget.getUserId, widget.signout),
                 ),
               );
             },

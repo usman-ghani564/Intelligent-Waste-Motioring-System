@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:vector_math/vector_math.dart' as vectorMath;
 import 'dart:math' as math;
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 class ComplaintProvider {
   Function getUserId = () {};
@@ -174,6 +175,7 @@ class ComplaintProvider {
         return "Complaint Registered!";
       }*/
 
+      var uuid = Uuid();
       String imageUrl = '';
 
       var data = {
@@ -195,9 +197,16 @@ class ComplaintProvider {
 
       var snapshot = await _firebaseStorage
           .ref()
-          .child('images/$longitude$latitude$uid$time')
+          .child('images/${uuid.v4()}')
           .putFile(file);
-
+      print(snapshot.ref.name);
+      print(snapshot.ref.fullPath);
+      print(snapshot.ref.parent);
+      print(snapshot.ref.root);
+      print(snapshot.ref.bucket);
+      print(snapshot.ref.getDownloadURL());
+      print(snapshot.ref.getData());
+      print(snapshot.ref.getMetadata());
       await snapshot.ref.getDownloadURL().then((value) async {
         data['imageUrl'] = value;
         imageUrl = value;
@@ -282,6 +291,47 @@ class ComplaintProvider {
     }
   }
 
+  Future<String> getUserType(String userId) async {
+    try {
+      dynamic usertype =
+          await _firebaseDatabase.ref('users').child(userId).get();
+
+      print('user type ' + usertype.value['userType'].toString());
+      return usertype.value['userType'].toString();
+    } catch (e) {
+      print('Error: $e');
+      return 'Error';
+    }
+  }
+
+  Future<String> editComplaint(
+      String complaintId, dynamic complain, String status) async {
+    try {
+      print('Complaint ID: in privder' + complaintId);
+      await _firebaseDatabase
+          .ref('complaints')
+          .child(complaintId)
+          .update({'status': status});
+      return 'updated!';
+    } catch (e) {
+      print('Error: $e');
+      return 'Error';
+    }
+  }
+
+  Future<String> editFaq(String faqId, String faq) async {
+    try {
+      print('Complaint ID: ' + faqId);
+      await _firebaseDatabase.ref('faq').child(faqId).set({
+        'answer': faq,
+      });
+      return 'updated!';
+    } catch (e) {
+      print('Error: $e');
+      return 'Error';
+    }
+  }
+
   Future<List<dynamic>> FilterComplaintsByUserId() async {
     try {
       List<dynamic> complaintsList = await getAllComplaint();
@@ -296,6 +346,38 @@ class ComplaintProvider {
     } catch (e) {
       print('Error: $e');
       return [];
+    }
+  }
+
+  Future<Map<String, int>> getComplaintsPercentage() async {
+    try {
+      List<dynamic> complaintsList = await getAllComplaint();
+      int total_count = complaintsList.length;
+      int registeredComplaintsCount = 0;
+      int canceledComplaintsCount = 0;
+      int completedComplaintsCount = 0;
+      Map<String, int> percentageMap = {};
+      List<dynamic> filteredList = [];
+      final userId = await getUserId();
+      for (var complaint in complaintsList) {
+        if (complaint['status'] == 'completed') {
+          completedComplaintsCount++;
+        } else if (complaint['status'] == 'Canceled') {
+          canceledComplaintsCount++;
+        } else {
+          //This is the case for registered Complaints
+          registeredComplaintsCount++;
+        }
+      }
+      print('==================================================');
+      print('completedComplaintsCount: ' + completedComplaintsCount.toString());
+      print('canceledComplaintsCount: ' + canceledComplaintsCount.toString());
+      print(
+          'registeredComplaintsCount: ' + registeredComplaintsCount.toString());
+      return percentageMap;
+    } catch (e) {
+      print('Error: $e');
+      return {};
     }
   }
 

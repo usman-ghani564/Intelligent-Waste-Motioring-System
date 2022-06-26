@@ -7,15 +7,22 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:location/location.dart' as loc;
 import '../main.dart';
+import '../providers/complaint_provider.dart';
+import './register_complaint_worker.dart';
 
 class WorkerComplaintList extends StatefulWidget {
   //const ComplaintList({Key? key}) : super(key: key);
   double latitude = 0;
   double logitude = 0;
+  late Function getUserId;
+  late Function signOut;
 
-  WorkerComplaintList(double lat, double lon) {
+  WorkerComplaintList(
+      double lat, double lon, Function getuid, Function signout) {
     latitude = lat;
     logitude = lon;
+    getUserId = getuid;
+    signOut = signout;
   }
 
   @override
@@ -33,6 +40,8 @@ class _WorkerComplaintListState extends State<WorkerComplaintList> {
   List<String> complainKeys = [];
   List<dynamic> originalComplainList = [];
   List<dynamic> workerComplainList = [];
+  List<Map<dynamic, dynamic>> mapList = [];
+  String keyid = '';
 
   updateState(dynamic val) async {
     print("val");
@@ -52,12 +61,13 @@ class _WorkerComplaintListState extends State<WorkerComplaintList> {
     Map<dynamic, dynamic> map = {};
     var count = 0;
     event.snapshot.children.forEach((element) {
-      print('print');
+      print('print worker complain list');
       print(count++);
-      print(element.value);
+      print(element.key);
       if (this.mounted) {
         setState(() {
           complainList.add(element.value);
+          mapList.add({element.key: element.value});
           complainKeys.add(element.key.toString());
           originalComplainList.add(element.value);
         });
@@ -73,9 +83,9 @@ class _WorkerComplaintListState extends State<WorkerComplaintList> {
 
   String dropdownValue = 'SortBy';
   var j = 0;
+
   @override
   void initState() {
-    // TODO: implement initState
     printFirebase();
     super.initState();
   }
@@ -94,9 +104,9 @@ class _WorkerComplaintListState extends State<WorkerComplaintList> {
       }
     }
     return Scaffold(
-      backgroundColor: const Color(0XFF2C3539),
+      backgroundColor: const Color(0XFF006E7F),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color(0xFFF8CB2E),
         actions: [
           DropdownButton<String>(
             value: dropdownValue,
@@ -151,7 +161,10 @@ class _WorkerComplaintListState extends State<WorkerComplaintList> {
       body: Center(
         child: ListView(
           //mainAxisAlignment: MainAxisAlignment.center,
-          children: [for (var i in workerComplainList) Card1(i, updateState)],
+          children: [
+            for (var i in originalComplainList)
+              Card1(i, updateState, widget.getUserId, mapList, widget.signOut)
+          ],
         ),
       ),
     );
@@ -161,16 +174,29 @@ class _WorkerComplaintListState extends State<WorkerComplaintList> {
 class Card1 extends StatefulWidget {
   var title, description, status, lat, lang, cid;
   String key1 = "";
+  String complainid = "";
+  dynamic complain2;
+  late Function getUserId;
+  late Function signOut;
   dynamic complain_obj;
+  List<Map<dynamic, dynamic>> mapList = [];
   Function deleteCard = (dynamic val) {};
+  String keyid = '';
 
-  Card1(dynamic complain, Function delcard) {
+  Card1(dynamic complain, Function delcard, Function getuid,
+      List<Map<dynamic, dynamic>> mList, Function signout) {
     title = complain['uid'];
     description = complain['dateTime'];
     status = complain['status'];
     lat = complain['latitude'];
     lang = complain['longitude'];
+    complainid = complain['uid'];
     // key1=k;
+    getUserId = getuid;
+    complain2 = complain;
+    signOut = signout;
+
+    mapList = mList;
     deleteCard = delcard;
     complain_obj = complain;
   }
@@ -208,7 +234,19 @@ class _Card1State extends State<Card1> {
 
   @override
   Widget build(BuildContext context) {
-    print("key = " + widget.key1);
+    // for (var i in widget.mapList) {
+    //   for (var entry in i.entries) {
+    //     if (widget.title == entry.value['uid'] &&
+    //         widget.lat == entry.value['latitude'] &&
+    //         widget.lang == entry.value['longitude'] &&
+    //         widget.status == entry.value['status']) {
+    //         widget.keyid = entry.key;
+    //         print("key in complainlist = " + widget.keyid);
+    //
+    //
+    //     }
+    //   }
+    // }
     return ExpandableNotifier(
         child: Padding(
       padding: const EdgeInsets.all(10),
@@ -220,7 +258,7 @@ class _Card1State extends State<Card1> {
               height: 10,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.lightGreenAccent,
+                  color: const Color(0xFFF8CB2E),
                   shape: BoxShape.rectangle,
                 ),
               ),
@@ -265,24 +303,34 @@ class _Card1State extends State<Card1> {
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: ElevatedButton(
-                        child: Text("Edit"),
-                        onPressed: () async {
-                          await ref.child("-N-4fZPHzKe3Xaw8KpOz").remove();
-                          //key "-N-4fZPHzKe3Xaw8KpOz"
-
-                          // await ref2.remove();
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: ElevatedButton(
                         style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.red)),
-                        child: Text("delete"),
+                            backgroundColor: MaterialStateProperty.all(
+                                const Color(0XFF006E7F))),
+                        child: Text(" Take a picture"),
                         onPressed: () {
-                          widget.deleteCard(widget.complain_obj);
+                          String key = '';
+                          for (var i in widget.mapList) {
+                            for (var entry in i.entries) {
+                              if (widget.title == entry.value['uid'] &&
+                                  widget.lat == entry.value['latitude'] &&
+                                  widget.lang == entry.value['longitude'] &&
+                                  widget.status == entry.value['status']) {
+                                key = entry.key;
+                                widget.keyid = key;
+                                print('key in loop' + key);
+                              }
+                            }
+                          }
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WorkerRegisterComplaint(
+                                  widget.signOut,
+                                  widget.getUserId,
+                                  widget.complain2,
+                                  widget.keyid),
+                            ),
+                          );
                         },
                       ),
                     )

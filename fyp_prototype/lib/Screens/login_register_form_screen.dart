@@ -411,7 +411,7 @@ class _LoginRegisterFormScreenState extends State<LoginRegisterFormScreen> {
           child: TextFormField(
             style: const TextStyle(color: Colors.white),
             controller: passwordController,
-            keyboardType: TextInputType.visiblePassword,
+            obscureText: false,
             decoration: const InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(

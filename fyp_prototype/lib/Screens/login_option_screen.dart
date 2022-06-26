@@ -242,7 +242,7 @@ class _LoginRegisterOptionScreenState extends State<LoginRegisterOptionScreen> {
           child: TextFormField(
             style: const TextStyle(color: Colors.black),
             controller: passwordController,
-            keyboardType: TextInputType.visiblePassword,
+            obscureText: true,
             decoration: const InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(

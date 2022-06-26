@@ -61,9 +61,9 @@ class _FaqScreenState extends State<FaqScreen> {
     print("in build");
     print(FAQList);
     return Scaffold(
-      backgroundColor: const Color(0XFF2C3539),
+      backgroundColor: const Color(0XFF006E7F),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color(0xFFF8CB2E),
         actions: [
           IconButton(
               onPressed: () {
